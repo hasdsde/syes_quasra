@@ -19,7 +19,7 @@
                 :to="child.link"
 
                 :active="link === child.link"
-                @click="handleLink(child.link)"
+                @click="handleLink(child.link,child,item)"
                 active-class="my-menu-link"
               >
                 <q-item-section avatar>
@@ -39,6 +39,9 @@
 
 <script setup>
 import {ref} from 'vue'
+import {useStore} from "src/store";
+
+const $store = useStore()
 //当前选中选项
 let link = ref(localStorage.getItem("link"))
 if (link == null) {
@@ -70,8 +73,8 @@ if (!localStorage.getItem('menus')) {
   localStorage.setItem('menus', JSON.stringify(menus))
 } else {
   menus.value = JSON.parse(localStorage.getItem('menus'))._value
-  console.log(JSON.parse(localStorage.getItem('menus'))._value)
-  console.log(menus.value)
+  // console.log(JSON.parse(localStorage.getItem('menus'))._value)
+  // console.log(menus.value)
 }
 
 //点击时修改展开数据
@@ -80,9 +83,11 @@ function handleOpen() {
 }
 
 //点击时修改选中数据
-function handleLink(value) {
+function handleLink(value, child, item) {
   this.link = value
   localStorage.setItem("link", value)
+  $store.commit("menus/thismenu", child.desc)
+  $store.commit("menus/uppermenu", item.label)
 }
 
 

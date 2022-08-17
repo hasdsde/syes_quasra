@@ -16,11 +16,11 @@
           @click="toggleLeftDrawer"
         />
         <!--    中间标题    -->
-        <q-toolbar-title>
+        <q-toolbar-title style="font-size: 14px">
           <q-breadcrumbs>
-            <q-breadcrumbs-el label="Home" icon="home" style="color: white"/>
-            <q-breadcrumbs-el label="Components" icon="widgets" style="color: white"/>
-            <q-breadcrumbs-el label="Breadcrumbs" style="color: white"/>
+            <q-breadcrumbs-el :label="$store.state.menus.uppermenu " icon="home" style="color: white"/>
+            <q-breadcrumbs-el :label="$store.state.menus.thismenu" icon="widgets" style="color: white"/>
+            <q-breadcrumbs-el label="详情" style="color: white"/>
           </q-breadcrumbs>
         </q-toolbar-title>
 
@@ -52,9 +52,18 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {computed, ref, watch} from 'vue';
 
+const $store = useStore()
 import Aside from '../components/Aside.vue';
+import {useStore} from "src/store";
+
+const thismenu = $store.state.menus.thismenu
+const uppermenu = $store.state.menus.uppermenu
+
+
+console.log($store.state.menus.thismenu)
+console.log($store.state.menus.uppermenu)
 
 // const essentialLinks: EssentialLinkProps[] = [
 //   {
