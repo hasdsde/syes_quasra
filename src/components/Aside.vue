@@ -73,8 +73,6 @@ if (!localStorage.getItem('menus')) {
   localStorage.setItem('menus', JSON.stringify(menus))
 } else {
   menus.value = JSON.parse(localStorage.getItem('menus'))._value
-  // console.log(JSON.parse(localStorage.getItem('menus'))._value)
-  // console.log(menus.value)
 }
 
 //点击时修改展开数据

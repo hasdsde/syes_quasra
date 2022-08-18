@@ -58,9 +58,6 @@ const $store = useStore()
 import Aside from '../components/Aside.vue';
 import {useStore} from "src/store";
 
-const thismenu = $store.state.menus.thismenu
-const uppermenu = $store.state.menus.uppermenu
-
 
 function handleMenu() {
   if ($store.state.menus.uppermenu === 'undefined') {
@@ -74,7 +71,7 @@ function handleMenu() {
   }
 }
 
-function handleMenuinfo(): String | undefined | null {
+function handleMenuinfo() {
   if ($store.state.menus.thismenu === 'undefined') {
     if (localStorage.getItem("menus/thismenu")) {
       return localStorage.getItem("menus/thismenu")

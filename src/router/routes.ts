@@ -9,7 +9,9 @@ const routes: RouteRecordRaw[] = [
       {path: 'Dashboard', component: () => import('pages/Dashboard.vue')},
       {path: 'CheckInfo', component: () => import('pages/CheckInfo.vue')},
       {path: 'UserManager', component: () => import('pages/UserManager.vue')},
-      {path: 'ItemManager', component: () => import('pages/ItemManager.vue')}
+      {path: 'ItemManager', component: () => import('pages/ItemManager.vue')},
+      {path: 'UserSetting', component: () => import('pages/UserSetting.vue')},
+      {path: 'About', component: () => import('pages/About.vue')},
     ],
   },
 
