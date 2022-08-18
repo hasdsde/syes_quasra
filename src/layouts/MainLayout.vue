@@ -21,6 +21,8 @@
             <q-breadcrumbs-el :label="handleMenu()" icon="home" style="color: white"/>
             <q-breadcrumbs-el :label="handleMenuinfo()" icon="widgets" style="color: white"/>
             <q-breadcrumbs-el label="详情" style="color: white"/>
+
+
           </q-breadcrumbs>
         </q-toolbar-title>
 
