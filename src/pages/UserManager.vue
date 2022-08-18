@@ -6,7 +6,7 @@
              @click="simulateProgress(0)" icon="replay"/>
       <q-btn class="shadow-1" unelevated color="secondary" label="新增" icon="add_circle_outline"/>
       <q-btn class="shadow-1" unelevated color="brown-5" label="导出" icon="file_download"/>
-
+      <!--搜索框-->
       <q-input label="搜索" v-model="searchtext" :dense=true
                style="display: inline-block;float: right;margin-right: 20px" debounce="1000">
         <template v-slot:append>
@@ -47,12 +47,14 @@
 <script setup lang="ts">
 
 import {ref, computed} from "vue";
-import getters from "src/store/menus/getters";
-//按钮加载动画
+import axios, {api} from "boot/axios";
+
+//刷新按钮
 let loading = ref([false,])
 
 function simulateProgress(number: number) {
   loading.value[number] = true
+  loadPage()
   setTimeout(() => {
     loading.value[number] = false
   }, 1000)
@@ -67,13 +69,19 @@ function handlePage() {
   console.log(currentPage.value)
 }
 
-//搜索文本
+//搜索
 let searchtext = ref('');
 
 function handlesearch() {
   console.log(searchtext.value)
 }
 
+//获取后端数据
+function loadPage() {
+  api.get("/user/20201313059").then(res => {
+    console.log(res)
+  })
+}
 
 //表格信息
 const columns = [
