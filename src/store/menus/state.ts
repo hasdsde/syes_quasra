@@ -7,8 +7,8 @@ export interface MenuStateInterface {
 function state(): MenuStateInterface {
   return {
     prop: false,
-    thismenu: '未定义',
-    uppermenu: '主页',
+    thismenu: 'undefined',
+    uppermenu: 'undefined',
   };
 }
 

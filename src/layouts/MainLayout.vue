@@ -18,8 +18,8 @@
         <!--    中间标题    -->
         <q-toolbar-title style="font-size: 14px">
           <q-breadcrumbs>
-            <q-breadcrumbs-el :label="$store.state.menus.uppermenu " icon="home" style="color: white"/>
-            <q-breadcrumbs-el :label="$store.state.menus.thismenu" icon="widgets" style="color: white"/>
+            <q-breadcrumbs-el :label="handleMenu()" icon="home" style="color: white"/>
+            <q-breadcrumbs-el :label="handleMenuinfo()" icon="widgets" style="color: white"/>
             <q-breadcrumbs-el label="详情" style="color: white"/>
           </q-breadcrumbs>
         </q-toolbar-title>
@@ -62,53 +62,30 @@ const thismenu = $store.state.menus.thismenu
 const uppermenu = $store.state.menus.uppermenu
 
 
-console.log($store.state.menus.thismenu)
-console.log($store.state.menus.uppermenu)
+function handleMenu() {
+  if ($store.state.menus.uppermenu === 'undefined') {
+    if (localStorage.getItem("menus/uppermenu")) {
+      return localStorage.getItem("menus/uppermenu")
+    } else {
+      return '主页'
+    }
+  } else {
+    return $store.state.menus.uppermenu
+  }
+}
 
-// const essentialLinks: EssentialLinkProps[] = [
-//   {
-//     title: 'Docs',
-//     caption: 'quasar.dev',
-//     icon: 'school',
-//     link: 'https://quasar.dev'
-//   },
-//   {
-//     title: 'Github',
-//     caption: 'github.com/quasarframework',
-//     icon: 'code',
-//     link: 'https://github.com/quasarframework'
-//   },
-//   {
-//     title: 'Discord Chat Channel',
-//     caption: 'chat.quasar.dev',
-//     icon: 'chat',
-//     link: 'https://chat.quasar.dev'
-//   },
-//   {
-//     title: 'Forum',
-//     caption: 'forum.quasar.dev',
-//     icon: 'record_voice_over',
-//     link: 'https://forum.quasar.dev'
-//   },
-//   {
-//     title: 'Twitter',
-//     caption: '@quasarframework',
-//     icon: 'rss_feed',
-//     link: 'https://twitter.quasar.dev'
-//   },
-//   {
-//     title: 'Facebook',
-//     caption: '@QuasarFramework',
-//     icon: 'public',
-//     link: 'https://facebook.quasar.dev'
-//   },
-//   {
-//     title: 'Quasar Awesome',
-//     caption: 'Community Quasar projects',
-//     icon: 'favorite',
-//     link: 'https://awesome.quasar.dev'
-//   }
-// ];
+function handleMenuinfo(): String | undefined | null {
+  if ($store.state.menus.thismenu === 'undefined') {
+    if (localStorage.getItem("menus/thismenu")) {
+      return localStorage.getItem("menus/thismenu")
+    } else {
+      return '仪表盘'
+    }
+  } else {
+    return $store.state.menus.thismenu
+  }
+}
+
 
 const leftDrawerOpen = ref(false)
 

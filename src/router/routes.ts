@@ -7,7 +7,9 @@ const routes: RouteRecordRaw[] = [
     children: [
       {path: '', redirect: 'Dashboard'},  //组件
       {path: 'Dashboard', component: () => import('pages/Dashboard.vue')},
-      {path: 'CheckInfo', component: () => import('pages/CheckInfo.vue')}
+      {path: 'CheckInfo', component: () => import('pages/CheckInfo.vue')},
+      {path: 'UserManager', component: () => import('pages/UserManager.vue')},
+      {path: 'ItemManager', component: () => import('pages/ItemManager.vue')}
     ],
   },
 

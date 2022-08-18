@@ -88,6 +88,8 @@ function handleLink(value, child, item) {
   localStorage.setItem("link", value)
   $store.commit("menus/thismenu", child.desc)
   $store.commit("menus/uppermenu", item.label)
+  localStorage.setItem("menus/thismenu", child.desc)
+  localStorage.setItem("menus/uppermenu", item.label)
 }
 
 
