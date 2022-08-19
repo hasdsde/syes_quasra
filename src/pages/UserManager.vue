@@ -50,21 +50,61 @@
         <div class="q-pa-md" style="max-width: 300px">
           <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset" class="q-gutter-md">
             <q-input
+              ref="idRef"
+              v-model="id"
+              label="学号"
+              hint="学生学号"
+              lazy-rules
+              :rules="idRules"
+            />
+            <q-input
               ref="nameRef"
               v-model="name"
-              label="Your name *"
-              hint="Name and surname"
+              label="姓名"
+              hint="输入真实姓名"
               lazy-rules
               :rules="nameRules"
             />
-
             <q-input
-              ref="ageRef"
-              type="number"
-              v-model="age"
-              label="Your age *"
+              ref="passwordRef"
+              v-model="password"
+              label="密码"
+              hint="请输入密码"
               lazy-rules
-              :rules="ageRules"
+              :rules="nameRules"
+              :type="isPwd ? 'password' : 'text'"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
+            <q-input
+              ref="repasswordRef"
+              v-model="repassword"
+              label="确认密码"
+              hint="请确认输入密码"
+              lazy-rules
+              :rules="passwordRules"
+              type="password"
+            />
+            <q-input
+              ref="nicknameRef"
+              v-model="nickname"
+              label="昵称"
+              hint="输入昵称，创建后可更改"
+              lazy-rules
+              :rules="nameRules"
+            />
+            <q-input
+              ref="phoneRef"
+              v-model="phone"
+              label="手机号"
+              hint="请输入正确格式手机号"
+              lazy-rules
             />
 
             <q-toggle v-model="accept" label="I accept the license and terms"/>
@@ -82,7 +122,7 @@
 
 <script setup lang="ts">
 import {Notify} from 'quasar'
-import {ref, computed} from "vue";
+import {ref, computed, Ref} from "vue";
 import axios, {api} from "boot/axios";
 import {exportFile, useQuasar} from 'quasar'
 //插件初始化
@@ -105,25 +145,9 @@ const currentPage = ref(1); //当前页面
 let Pagecount = ref(1)  //页数
 const PageItem: number = 10   //页面数据数量
 const pagination = ref({rowsPerPage: 10}) //表格显示的最大数量
-
-
 function handlePage() {
   loadPage();
 }
-
-//搜索
-let searchtext = ref('');
-
-function handlesearch() {
-  api.get("/user/" + searchtext.value).then(res => {
-  })
-}
-
-function handleRest() {
-  searchtext.value = "";
-  console.log("重置了按钮")
-}
-
 
 //获取后端数据
 let columns = ref([])
@@ -153,6 +177,25 @@ function loadPage() {
 
 }
 
+//搜索
+let searchtext = ref('');
+
+function handlesearch() {
+  api.get("/user/" + searchtext.value).then(res => {
+    rows.value.splice(0)
+    for (let i: number = 0; i < res.data.data.length; i++) {
+      //@ts-ignore
+      rows.value[i] = res.data.data[i]
+    }
+  })
+}
+
+function handleRest() {
+  searchtext.value = "";
+  console.log("重置了按钮")
+  loadPage()
+}
+
 
 //新增用户
 let windowDisplay = ref(false)
@@ -160,12 +203,29 @@ const name = ref('')
 const nameRef = ref('')
 const age = ref('')
 const ageRef = ref('')
+const id = ref('')
+const idRef = ref('')
+const nickname = ref('')
+const nicknameRef = ref('')
+const phone = ref('')
+const phoneRef = ref('')
+const password = ref('')
+const passwordRef = ref('')
+const isPwd = ref(true)
+const repassword = ref('')
+const repasswordRef = ref('')
+
+
 let accept = ref(false)
+let passwordRules = ref([(val: Ref<string>) => (val == password) || '两次输入密码不一致'])
 let nameRules = ref([(val: string | any[]) => (val && val.length > 0) || 'Please type something'])
 
 let ageRules = ref([
   (val: string | null) => (val !== null && val !== '') || 'Please type your age',
   (val: number) => (val > 0 && val < 100) || 'Please type a real age'
+])
+let idRules = ref([
+  (val: number) => (val > 0 && val < 20229999999) || 'Please type a real age'
 ])
 
 //新增用户提交
