@@ -7,7 +7,7 @@
              @click="simulateProgress(0)" icon="replay"/>
       <q-btn class="shadow-1" unelevated color="secondary" label="新增" @click="windowDisplay=true"
              icon="add_circle_outline"/>
-      <q-btn class="shadow-1" unelevated color="brown-5" label="导出" @click="" icon="file_download"/>
+      <q-btn class="shadow-1" unelevated color="brown-5" label="导出" @click="exportTable" icon="file_download"/>
       <!--搜索框-->
       <q-input label="搜索" v-model="searchtext" :dense=true
                style="display: inline-block;float: right;margin-right: 20px" debounce="1000">
@@ -116,7 +116,6 @@ let searchtext = ref('');
 
 function handlesearch() {
   api.get("/user/" + searchtext.value).then(res => {
-    console.log(res)
   })
 }
 
@@ -148,10 +147,8 @@ function loadPage() {
   }
 //获取分页数据
   api.get("/user/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value).then(res => {
-    console.log(res.data)
     rows.value = res.data.data.data
     Pagecount.value = Math.ceil(res.data.data.total / PageItem)
-    console.log(Pagecount.value)
   })
 
 }
@@ -208,7 +205,55 @@ function onReset() {
   accept.value = false
 }
 
+//导出数据
+function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | undefined, row: any) {
+  let formatted = formatFn !== void 0
+    ? formatFn(val, row)
+    : val
 
+  formatted = formatted === void 0 || formatted === null
+    ? ''
+    : String(formatted)
+
+  formatted = formatted.split('"').join('""')
+  /**
+   * Excel accepts \n and \r in strings, but some other CSV parsers do not
+   * Uncomment the next two lines to escape new lines
+   */
+  // .split('\n').join('\\n')
+  // .split('\r').join('\\r')
+
+  return `"${formatted}"`
+}
+
+function exportTable() {
+  //@ts-ignore
+  const content = [columns.map(col => wrapCsvValue(col.label))].concat(
+    //@ts-ignore
+    rows.value.map(row => columns.map(col => wrapCsvValue(
+      typeof col.field === 'function'
+        ? col.field(row)
+        : row[col.field === void 0 ? col.name : col.field],
+      col.format,
+      row
+    )).join(','))
+  ).join('\r\n')
+
+  const status = exportFile(
+    'table-export.csv',
+    content,
+    'text/csv'
+  )
+
+
+  if (status !== true) {
+    $q.notify({
+      message: 'Browser denied file download...',
+      color: 'negative',
+      icon: 'warning'
+    })
+  }
+}
 </script>
 
 <style scoped>
