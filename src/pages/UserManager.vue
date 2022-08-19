@@ -26,6 +26,7 @@
         :columns="columns"
         row-key="name"
         hide-pagination
+        :pagination="pagination"
       />
     </div>
     <!--  分页  -->
@@ -34,8 +35,8 @@
         v-model="currentPage"
         :max="Pagecount"
         direction-links
-        max="100"
         @click="handlePage()"
+        style="min-width: 2em"
       />
     </div>
     <!--新增弹出框-->
@@ -100,11 +101,14 @@ function simulateProgress(number: number) {
 
 
 //分页
-const currentPage = ref(1);
-const Pagecount: number = 6;
+const currentPage = ref(1); //当前页面
+let Pagecount = ref(1)  //页数
+const PageItem: number = 10   //页面数据数量
+const pagination = ref({rowsPerPage: 10}) //表格显示的最大数量
+
 
 function handlePage() {
-  console.log(currentPage.value)
+  loadPage();
 }
 
 //搜索
@@ -124,9 +128,11 @@ function handleRest() {
 
 //获取后端数据
 let columns = ref([])
+let rows = ref([])
 loadPage()
 
 function loadPage() {
+  //获取表格属性
   if (localStorage.getItem("usercolumns") == null) {
     api.get("/tablemenu/user").then(res => {
       columns.value = res.data.data
@@ -137,12 +143,15 @@ function loadPage() {
       localStorage.setItem("usercolumns", JSON.stringify(columns))
     })
   } else {
-    columns = JSON.parse(localStorage.getItem("usercolumns"))._value // @ts-ignore
-    console.log(columns)
+    // @ts-ignore 不清楚怎么办到的，能跑就行
+    columns = JSON.parse(localStorage.getItem("usercolumns"))._value
   }
-
-  api.get("/user/page?" + "pagesize=" + Pagecount + "&currentpage=" + currentPage.value).then(res => {
+//获取分页数据
+  api.get("/user/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value).then(res => {
+    console.log(res.data)
     rows.value = res.data.data.data
+    Pagecount.value = Math.ceil(res.data.data.total / PageItem)
+    console.log(Pagecount.value)
   })
 
 }
@@ -200,178 +209,6 @@ function onReset() {
 }
 
 
-//表格信息
-
-
-// {
-//   label: 'Dessert (100g serving)',
-//   align: 'left',
-//   field: (row: { name: any; }) => row.name,
-// },
-// {align: 'center', label: 'Calories', field: 'calories',},
-// {align: 'center', label: 'Fat (g)', field: 'fat'},
-// {align: 'center', label: 'Carbs (g)', field: 'carbs'},
-// {align: 'center', label: 'Protein (g)', field: 'protein'},
-// {align: 'center', name: 'sodium', label: 'Sodium (mg)', field: 'sodium'},
-// {
-//   label: 'Calcium (%)',
-//   field: 'calcium',
-// },
-// {
-//   label: 'Iron (%)',
-//   field: 'iron',
-// }
-
-
-let rows = ref([])
-//   {
-//     name: 'Frozen Yogurt',
-//     calories: 159,
-//     fat: 6.0,
-//     carbs: 24,
-//     protein: 4.0,
-//     sodium: 87,
-//     calcium: '14%',
-//     iron: '1%'
-//   },
-//   {
-//     name: 'Ice cream sandwich',
-//     calories: 237,
-//     fat: 9.0,
-//     carbs: 37,
-//     protein: 4.3,
-//     sodium: 129,
-//     calcium: '8%',
-//     iron: '1%'
-//   },
-//   {
-//     name: 'Eclair',
-//     calories: 262,
-//     fat: 16.0,
-//     carbs: 23,
-//     protein: 6.0,
-//     sodium: 337,
-//     calcium: '6%',
-//     iron: '7%'
-//   },
-//   {
-//     name: 'Cupcake',
-//     calories: 305,
-//     fat: 3.7,
-//     carbs: 67,
-//     protein: 4.3,
-//     sodium: 413,
-//     calcium: '3%',
-//     iron: '8%'
-//   },
-//   {
-//     name: 'Gingerbread',
-//     calories: 356,
-//     fat: 16.0,
-//     carbs: 49,
-//     protein: 3.9,
-//     sodium: 327,
-//     calcium: '7%',
-//     iron: '16%'
-//   },
-//   {
-//     name: 'Jelly bean',
-//     calories: 375,
-//     fat: 0.0,
-//     carbs: 94,
-//     protein: 0.0,
-//     sodium: 50,
-//     calcium: '0%',
-//     iron: '0%'
-//   },
-//   {
-//     name: 'Lollipop',
-//     calories: 392,
-//     fat: 0.2,
-//     carbs: 98,
-//     protein: 0,
-//     sodium: 38,
-//     calcium: '0%',
-//     iron: '2%'
-//   },
-//   {
-//     name: 'Honeycomb',
-//     calories: 408,
-//     fat: 3.2,
-//     carbs: 87,
-//     protein: 6.5,
-//     sodium: 562,
-//     calcium: '0%',
-//     iron: '45%'
-//   },
-//   {
-//     name: 'Donut',
-//     calories: 452,
-//     fat: 25.0,
-//     carbs: 51,
-//     protein: 4.9,
-//     sodium: 326,
-//     calcium: '2%',
-//     iron: '22%'
-//   },
-//   {
-//     name: 'KitKat',
-//     calories: 518,
-//     fat: 26.0,
-//     carbs: 65,
-//     protein: 7,
-//     sodium: 54,
-//     calcium: '12%',
-//     iron: '6%'
-//   }
-// ]
-//
-// //Excel导出数据
-// function wrapCsvValue(val: string, formatFn: ((arg0: any, arg1: any) => any) | undefined, row: { name: string; calories: number; fat: number; carbs: number; protein: number; sodium: number; calcium: string; iron: string; } | undefined) {
-//   let formatted = formatFn !== void 0
-//     ? formatFn(val, row)
-//     : val
-//
-//   formatted = formatted === void 0 || formatted === null
-//     ? ''
-//     : String(formatted)
-//
-//   formatted = formatted.split('"').join('""')
-//   /**
-//    * Excel accepts \n and \r in strings, but some other CSV parsers do not
-//    * Uncomment the next two lines to escape new lines
-//    */
-//   // .split('\n').join('\\n')
-//   // .split('\r').join('\\r')
-//
-//   return `"${formatted}"`
-// }
-
-// function exportTable() {
-//   // naive encoding to csv format
-//   const content = [columns.value.map(col => wrapCsvValue(col.label, undefined, undefined))].concat(
-//     rows.value.map(row => columns.value.map(col => wrapCsvValue(
-//       typeof col.field === 'function'
-//         ? col.field(row)// @ts-ignore
-//         : row[col.field === void 0 ? col.name : col.field],// @ts-ignore
-//       col.format,
-//       row
-//     )).join(','))
-//   ).join('\r\n')
-//   const status = exportFile(
-//     'table-export.csv',
-//     content,
-//     'text/csv'
-//   )
-//
-//   if (status !== true) {
-//     $q.notify({
-//       message: 'Browser denied file download...',
-//       color: 'negative',
-//       icon: 'warning'
-//     })
-//   }
-// }
 </script>
 
 <style scoped>
