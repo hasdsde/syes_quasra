@@ -7,6 +7,7 @@
              @click="simulateProgress(0)" icon="replay"/>
       <q-btn class="shadow-1" unelevated color="secondary" label="新增" @click="windowDisplay=true"
              icon="add_circle_outline"/>
+      <q-btn class="shadow-1" unelevated color="red" label="删除" @click="showNotif" icon="delete_forever"/>
       <q-btn class="shadow-1" unelevated color="brown-5" label="导出" @click="exportTable" icon="file_download"/>
       <!--搜索框-->
       <q-input label="搜索" v-model="searchtext" :dense=true
@@ -24,10 +25,17 @@
         title="用户信息管理"
         :rows="rows"
         :columns="columns"
-        row-key="name"
+        row-key="id"
         hide-pagination
         :pagination="pagination"
+        :selected-rows-label="getSelectedString"
+        selection="multiple"
+        v-model:selected="selected"
       />
+    </div>
+
+    <div class="q-mt-md">
+      Selected: {{ JSON.stringify(selected) }}
     </div>
     <!--  分页  -->
     <div class="q-pa-lg flex flex-center">
@@ -107,11 +115,11 @@
               lazy-rules
             />
 
-            <q-toggle v-model="accept" label="I accept the license and terms"/>
+            <q-toggle v-model="accept" label="同意许可协议"/>
 
             <div>
-              <q-btn label="Submit" type="submit" color="primary"/>
-              <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm"/>
+              <q-btn label="提交" type="submit" color="primary"/>
+              <q-btn label="重置" type="reset" color="primary" flat class="q-ml-sm"/>
             </div>
           </form>
         </div>
@@ -136,9 +144,22 @@ function simulateProgress(number: number) {
   loadPage()
   setTimeout(() => {
     loading.value[number] = false
-  }, 1000)
+    $q.notify({
+      type: 'positive',
+      color: 'positive',
+      message: '刷新完成',
+      position: 'top'
+    })
+  }, 500)
+
 }
 
+//表格多选框
+const selected = ref([])
+
+function getSelectedString() {
+  return selected.value.length === 0 ? '' : `${selected.value.length} record${selected.value.length > 1 ? 's' : ''} selected of ${rows.length}`
+}
 
 //分页
 const currentPage = ref(1); //当前页面
@@ -196,6 +217,33 @@ function handleRest() {
   loadPage()
 }
 
+//删除
+function showNotif() {
+  $q.notify({
+    message: '确定要删除所选项目吗？',
+    type: 'negative',
+    position: 'top',
+    actions: [
+      {
+        label: '确定', color: 'yellow', handler: () => {
+          const idlist: any = ref([])
+          selected.value.forEach((item: any, index) => {
+            idlist.value.push(item.id)
+          })
+          api.post("/user/dlist?ids=" + JSON.stringify(idlist.value)).then(res => {
+            console.log(res)
+            loadPage()
+          })
+        }
+      },
+      {
+        label: '取消', color: 'white', handler: () => { /* ... */
+        }
+      }
+    ]
+  })
+}
+
 
 //新增用户
 let windowDisplay = ref(false)
@@ -215,23 +263,33 @@ const isPwd = ref(true)
 const repassword = ref('')
 const repasswordRef = ref('')
 
-
+//表格规则
 let accept = ref(false)
-let passwordRules = ref([(val: Ref<string>) => (val == password) || '两次输入密码不一致'])
+//@ts-ignore 我不知道为什么，但是它能跑
+let passwordRules = ref([(val: Ref<string>) => (val == password.value) || '两次输入密码不一致'])
 let nameRules = ref([(val: string | any[]) => (val && val.length > 0) || 'Please type something'])
 
 let ageRules = ref([
-  (val: string | null) => (val !== null && val !== '') || 'Please type your age',
-  (val: number) => (val > 0 && val < 100) || 'Please type a real age'
+  (val: string | null) => (val !== null && val !== '') || '请输入年龄',
+  (val: number) => (val > 0 && val < 100) || '数字格式不正确'
 ])
 let idRules = ref([
-  (val: number) => (val > 0 && val < 20229999999) || 'Please type a real age'
+  (val: number) => (val > 0 && val < 20229999999) || '请输入正确的学号'
 ])
 
 //新增用户提交
 function onSubmit() {
-  if (name.value != '' || age.value != '') {
-    if (accept.value == true) {
+  if (accept.value == true) {
+    if (name.value != '' && id.value != '' && password.value != '' && nickname.value != '' && password.value == repassword.value && phone.value != '') {
+      api.post("/user/", {
+        "realname": name.value,
+        "password": password.value,
+        "nickname": nickname.value,
+        "phone": phone.value,
+        "id": id.value
+      }).then(res => {
+        console.log(res)
+      })
       $q.notify({
         icon: 'done',
         color: 'positive',
@@ -240,17 +298,19 @@ function onSubmit() {
       })
       accept.value = false
       windowDisplay.value = false
+      onReset()
+      loadPage()
     } else {
       $q.notify({
         color: 'negative',
-        message: '请同意协议',
+        message: '请检查格式是否正确',
         position: 'top'
       })
     }
   } else {
     $q.notify({
       color: 'negative',
-      message: '输入格式不正确',
+      message: '请先同意协议',
       position: 'top'
     })
   }
@@ -259,7 +319,16 @@ function onSubmit() {
 function onReset() {
   name.value = ''
   age.value = ''
-
+  id.value = ''
+  idRef.value = ''
+  nicknameRef.value = ''
+  nickname.value = ''
+  passwordRef.value = ''
+  password.value = ''
+  repassword.value = ''
+  repasswordRef.value = ''
+  phoneRef.value = ''
+  phone.value = ''
   nameRef.value = ''
   ageRef.value = ''
   accept.value = false
@@ -276,13 +345,6 @@ function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | unde
     : String(formatted)
 
   formatted = formatted.split('"').join('""')
-  /**
-   * Excel accepts \n and \r in strings, but some other CSV parsers do not
-   * Uncomment the next two lines to escape new lines
-   */
-  // .split('\n').join('\\n')
-  // .split('\r').join('\\r')
-
   return `"${formatted}"`
 }
 
