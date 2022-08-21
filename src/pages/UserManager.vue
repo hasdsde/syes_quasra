@@ -1,5 +1,4 @@
 <template>
-
   <!-- 顶部按钮 -->
   <div class="q-pa-md q-gutter-sm">
     <div class="header">
@@ -237,10 +236,11 @@ function showNotif() {
           selected.value.forEach((item: any, index) => {
             idlist.value.push(item.id)
           })
-          api.post("/user/dlist?ids=" + JSON.stringify(idlist.value)).then(res => {
-            console.log(res)
-            loadPage()
-          })
+          console.log(JSON.stringify(idlist.value))
+          // api.post("/user/dlist?ids=" + JSON.stringify(idlist.value)).then(res => {
+          //   console.log(res)
+          //   loadPage()
+          // })
         }
       },
       {
