@@ -182,6 +182,7 @@ let rows = ref([])
 loadPage()
 
 function loadPage() {
+
   //获取表格属性
   if (localStorage.getItem("usercolumns") == null) {
     api.get("/tablemenu/user").then(res => {
@@ -241,6 +242,14 @@ function showNotif() {
           //   console.log(res)
           //   loadPage()
           // })
+
+          // 删除用户
+          deleteUsers_ById(idlist)
+
+          // 刷新页面
+          setTimeout(() => {
+            loadPage()
+          }, 500)
         }
       },
       {
@@ -248,6 +257,35 @@ function showNotif() {
         }
       }
     ]
+  })
+}
+
+// 根据id删除多个用户
+function deleteUsers_ById(idlist: any) {
+  idlist.value.forEach((item: string) => {
+    // 先用枚举删除将就一下
+    deleteUserById(item)
+  })
+}
+
+// 根据id删除单个用户
+function deleteUserById(id: string) {
+  api.delete("user/" + id).then(res => {
+    if (res.data.code == 200) {
+      $q.notify({
+        type: 'positive',
+        color: 'positive',
+        message: '成功删除' + res.data.data,
+        position: 'top'
+      })
+    } else {
+      $q.notify({
+        type: 'negative',
+        color: 'negative',
+        message: '删除失败' + id,
+        position: 'top'
+      })
+    }
   })
 }
 
