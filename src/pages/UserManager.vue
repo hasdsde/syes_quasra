@@ -5,9 +5,10 @@
     <div class="header">
       <q-btn class="shadow-1" unelevated color="primary" label="刷新" :loading="loading[0]"
              @click="simulateProgress(0)" icon="replay"/>
-      <q-btn class="shadow-1" unelevated color="secondary" label="新增" @click="windowDisplay=true;onReset()"
+      <q-btn class="shadow-1" unelevated color="secondary" label="新增"
+             @click="windowDisplay=true;onReset();buttonStatus='新增用户'"
              icon="add_circle_outline"/>
-      <q-btn class="shadow-1" unelevated color="purple" label="修改" @click="checkCounts"
+      <q-btn class="shadow-1" unelevated color="purple" label="修改" @click="checkCounts();buttonStatus='修改用户'"
              icon="edit"/>
       <q-btn class="shadow-1" unelevated color="red" label="删除" @click="showNotif" icon="delete_forever"/>
       <q-btn class="shadow-1" unelevated color="brown-5" label="导出" @click="exportTable" icon="file_download"/>
@@ -22,7 +23,7 @@
     </div>
 
     <!--  表格  -->
-    <div class="q-pa-md" style="margin-left:40px">
+    <div class="q-pa-md" style="margin-left:auto">
       <q-table
         title="用户信息管理"
         :rows="rows"
@@ -36,9 +37,9 @@
       />
     </div>
 
-    <div class="q-mt-md">
-      Selected: {{ JSON.stringify(selected) }}
-    </div>
+    <!--    <div class="q-mt-md">-->
+    <!--      Selected: {{ JSON.stringify(selected) }}-->
+    <!--    </div>-->
     <!--  分页  -->
     <div class="q-pa-lg flex flex-center">
       <q-pagination
@@ -53,11 +54,11 @@
     <q-dialog v-model="windowDisplay" position="right">
       <q-card class="column full-height" style="width: 400px">
         <q-card-section class="row items-center q-pb-none ">
-          <div class="text-h6">新增用户</div>
+          <div class="text-h6">{{ buttonStatus }}</div>
           <q-space/>
           <q-btn icon="close" flat round dense v-close-popup/>
         </q-card-section>
-        <div class="q-pa-md" style="max-width: 300px">
+        <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
           <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset" class="q-gutter-md">
             <q-input
               ref="userinfo.idRef.value"
@@ -66,6 +67,7 @@
               hint="学生学号"
               lazy-rules
               :rules="idRules"
+              :readonly="buttonStatus==='修改用户'"
             />
             <q-input
               ref="userinfo.nameRef.value"
@@ -120,8 +122,9 @@
             <q-toggle v-model="userinfo.accept.value" label="同意许可协议"/>
 
             <div>
-              <q-btn label="提交" type="submit" color="primary"/>
-              <q-btn label="重置" type="reset" color="primary" flat class="q-ml-sm"/>
+              <q-btn v-if="buttonStatus==='新增用户'" label="提交" type="submit" color="primary"/>
+              <q-btn v-if="buttonStatus==='修改用户'" label="提交修改" type="submit" color="primary"/>
+              <q-btn v-if="buttonStatus==='新增用户'" label="重置" type="reset" color="primary" flat class="q-ml-sm"/>
             </div>
           </form>
         </div>
@@ -162,8 +165,7 @@ function simulateProgress(number: number) {
 const selected = ref([])
 
 function getSelectedString() {
-  //@ts-ignore
-  return selected.value.length === 0 ? '' : `${selected.value.length} record${selected.value.length > 1 ? 's' : ''} selected of ${rows.length}`
+  return selected.value.length === 0 ? '' : `已选择${selected.value.length}项${selected.value.length > 1 ? '' : ''}`
 }
 
 //分页
@@ -253,12 +255,12 @@ function showNotif() {
 //新增用户
 const userinfo = new Userinfo();
 let windowDisplay = ref(false)
-
+let buttonStatus: string = '新增用户'
 
 //表格规则
 let accept = ref(false)
 //@ts-ignore 我不知道为什么，但是它能跑
-let passwordRules = ref([(val: Ref<string>) => (val == password.value) || '两次输入密码不一致'])
+let passwordRules = ref([(val: Ref<string>) => (val == userinfo.password.value) || '两次输入密码不一致'])
 let nameRules = ref([(val: string | any[]) => (val && val.length > 0) || 'Please type something'])
 
 let ageRules = ref([
@@ -272,22 +274,48 @@ let idRules = ref([
 //新增用户提交
 function onSubmit() {
   if (userinfo.accept.value == true) {
+    console.log('当前操作：' + buttonStatus)
     if (userinfo.name.value != '' && userinfo.id.value != '' && userinfo.password.value != '' && userinfo.nickname.value != '' && userinfo.password.value == userinfo.repassword.value && userinfo.phone.value != '') {
-      api.post("/user/", {
-        "realname": userinfo.name.value,
-        "password": userinfo.password.value,
-        "nickname": userinfo.nickname.value,
-        "phone": userinfo.phone.value,
-        "id": userinfo.id.value
-      }).then(res => {
-        console.log(res)
-      })
-      $q.notify({
-        icon: 'done',
-        color: 'positive',
-        message: '提交成功',
-        position: 'top'
-      })
+      if (buttonStatus === '新增用户') {
+        console.log("执行了新增用户")
+        api.post("/user/", {
+          "realname": userinfo.name.value,
+          "password": userinfo.password.value,
+          "nickname": userinfo.nickname.value,
+          "phone": userinfo.phone.value,
+          "id": userinfo.id.value
+        }).then(res => {
+          if (res.status == 200) {
+            $q.notify({
+              icon: 'done',
+              color: 'positive',
+              message: '提交成功',
+              position: 'top'
+            })
+            loadPage()
+          }
+        })
+      }
+      if (buttonStatus === '修改用户') {
+        console.log("执行了修改用户")
+        api.put("/user/", {
+          "realname": userinfo.name.value,
+          "password": userinfo.password.value,
+          "nickname": userinfo.nickname.value,
+          "phone": userinfo.phone.value,
+          "id": userinfo.id.value
+        }).then(res => {
+          if (res.status == 200) {
+            $q.notify({
+              icon: 'done',
+              color: 'positive',
+              message: '提交成功',
+              position: 'top'
+            })
+            loadPage()
+          }
+        })
+      }
       userinfo.accept.value = false
       windowDisplay.value = false
       onReset()
@@ -315,15 +343,19 @@ function onReset() {
 
 //修改用户
 function checkCounts() {
+  buttonStatus = '修改用户'
   if (selected.value.length != 1) {
     $q.notify({
       message: '请选择一个数据修改',
       position: 'top',
       type: 'warning',
     })
-  } else {
-    onReset()
-    console.log(selected.value[0])
+  } else {//@ts-ignore
+    userinfo.id.value = selected.value[0].id//@ts-ignore
+    userinfo.name.value = selected.value[0].realname//@ts-ignore
+    userinfo.nickname.value = selected.value[0].nickname//@ts-ignore
+    userinfo.phone.value = selected.value[0].phone
+    windowDisplay.value = true
   }
 }
 

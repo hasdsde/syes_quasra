@@ -31,8 +31,8 @@ export class Userinfo {
   SetItem(values: any) {
     this.name = values.name
     this.nameRef = values.nameRef
-    this.age = values.age
-    this.ageRef = values.ageRef
+    // this.age = values.age
+    // this.ageRef = values.ageRef
     this.id = values.id
     this.idRef = values.idRef
     this.nickname = values.nickname
