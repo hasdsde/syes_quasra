@@ -5,8 +5,10 @@
     <div class="header">
       <q-btn class="shadow-1" unelevated color="primary" label="刷新" :loading="loading[0]"
              @click="simulateProgress(0)" icon="replay"/>
-      <q-btn class="shadow-1" unelevated color="secondary" label="新增" @click="windowDisplay=true"
+      <q-btn class="shadow-1" unelevated color="secondary" label="新增" @click="windowDisplay=true;onReset()"
              icon="add_circle_outline"/>
+      <q-btn class="shadow-1" unelevated color="purple" label="修改" @click="checkCounts"
+             icon="edit"/>
       <q-btn class="shadow-1" unelevated color="red" label="删除" @click="showNotif" icon="delete_forever"/>
       <q-btn class="shadow-1" unelevated color="brown-5" label="导出" @click="exportTable" icon="file_download"/>
       <!--搜索框-->
@@ -20,7 +22,7 @@
     </div>
 
     <!--  表格  -->
-    <div class="q-pa-md">
+    <div class="q-pa-md" style="margin-left:40px">
       <q-table
         title="用户信息管理"
         :rows="rows"
@@ -58,41 +60,41 @@
         <div class="q-pa-md" style="max-width: 300px">
           <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset" class="q-gutter-md">
             <q-input
-              ref="idRef"
-              v-model="id"
+              ref="userinfo.idRef.value"
+              v-model="userinfo.id.value"
               label="学号"
               hint="学生学号"
               lazy-rules
               :rules="idRules"
             />
             <q-input
-              ref="nameRef"
-              v-model="name"
+              ref="userinfo.nameRef.value"
+              v-model="userinfo.name.value"
               label="姓名"
               hint="输入真实姓名"
               lazy-rules
               :rules="nameRules"
             />
             <q-input
-              ref="passwordRef"
-              v-model="password"
+              ref="userinfo.passwordRef.value"
+              v-model="userinfo.password.value"
               label="密码"
               hint="请输入密码"
               lazy-rules
               :rules="nameRules"
-              :type="isPwd ? 'password' : 'text'"
+              :type="userinfo.isPwd.value ? 'password' : 'text'"
             >
               <template v-slot:append>
                 <q-icon
-                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  :name="userinfo.isPwd.value ? 'visibility_off' : 'visibility'"
                   class="cursor-pointer"
-                  @click="isPwd = !isPwd"
+                  @click="userinfo.isPwd.value = !userinfo.isPwd.value"
                 />
               </template>
             </q-input>
             <q-input
-              ref="repasswordRef"
-              v-model="repassword"
+              ref="userinfo.passwordRef.value"
+              v-model="userinfo.repassword.value"
               label="确认密码"
               hint="请确认输入密码"
               lazy-rules
@@ -100,22 +102,22 @@
               type="password"
             />
             <q-input
-              ref="nicknameRef"
-              v-model="nickname"
+              ref="userinfo.nickname.value"
+              v-model="userinfo.nickname.value"
               label="昵称"
               hint="输入昵称，创建后可更改"
               lazy-rules
               :rules="nameRules"
             />
             <q-input
-              ref="phoneRef"
-              v-model="phone"
+              ref="userinfo.phoneRef.value"
+              v-model="userinfo.phone.value"
               label="手机号"
               hint="请输入正确格式手机号"
               lazy-rules
             />
 
-            <q-toggle v-model="accept" label="同意许可协议"/>
+            <q-toggle v-model="userinfo.accept.value" label="同意许可协议"/>
 
             <div>
               <q-btn label="提交" type="submit" color="primary"/>
@@ -130,9 +132,11 @@
 
 <script setup lang="ts">
 import {Notify} from 'quasar'
-import {ref, computed, Ref} from "vue";
+import {ref, computed, Ref, registerRuntimeCompiler} from "vue";
 import axios, {api} from "boot/axios";
 import {exportFile, useQuasar} from 'quasar'
+import {Userinfo} from "components/models";
+
 //插件初始化
 const $q = useQuasar()
 
@@ -158,6 +162,7 @@ function simulateProgress(number: number) {
 const selected = ref([])
 
 function getSelectedString() {
+  //@ts-ignore
   return selected.value.length === 0 ? '' : `${selected.value.length} record${selected.value.length > 1 ? 's' : ''} selected of ${rows.length}`
 }
 
@@ -246,22 +251,9 @@ function showNotif() {
 
 
 //新增用户
+const userinfo = new Userinfo();
 let windowDisplay = ref(false)
-const name = ref('')
-const nameRef = ref('')
-const age = ref('')
-const ageRef = ref('')
-const id = ref('')
-const idRef = ref('')
-const nickname = ref('')
-const nicknameRef = ref('')
-const phone = ref('')
-const phoneRef = ref('')
-const password = ref('')
-const passwordRef = ref('')
-const isPwd = ref(true)
-const repassword = ref('')
-const repasswordRef = ref('')
+
 
 //表格规则
 let accept = ref(false)
@@ -279,14 +271,14 @@ let idRules = ref([
 
 //新增用户提交
 function onSubmit() {
-  if (accept.value == true) {
-    if (name.value != '' && id.value != '' && password.value != '' && nickname.value != '' && password.value == repassword.value && phone.value != '') {
+  if (userinfo.accept.value == true) {
+    if (userinfo.name.value != '' && userinfo.id.value != '' && userinfo.password.value != '' && userinfo.nickname.value != '' && userinfo.password.value == userinfo.repassword.value && userinfo.phone.value != '') {
       api.post("/user/", {
-        "realname": name.value,
-        "password": password.value,
-        "nickname": nickname.value,
-        "phone": phone.value,
-        "id": id.value
+        "realname": userinfo.name.value,
+        "password": userinfo.password.value,
+        "nickname": userinfo.nickname.value,
+        "phone": userinfo.phone.value,
+        "id": userinfo.id.value
       }).then(res => {
         console.log(res)
       })
@@ -296,7 +288,7 @@ function onSubmit() {
         message: '提交成功',
         position: 'top'
       })
-      accept.value = false
+      userinfo.accept.value = false
       windowDisplay.value = false
       onReset()
       loadPage()
@@ -317,22 +309,24 @@ function onSubmit() {
 }
 
 function onReset() {
-  name.value = ''
-  age.value = ''
-  id.value = ''
-  idRef.value = ''
-  nicknameRef.value = ''
-  nickname.value = ''
-  passwordRef.value = ''
-  password.value = ''
-  repassword.value = ''
-  repasswordRef.value = ''
-  phoneRef.value = ''
-  phone.value = ''
-  nameRef.value = ''
-  ageRef.value = ''
+  userinfo.clearall()
   accept.value = false
 }
+
+//修改用户
+function checkCounts() {
+  if (selected.value.length != 1) {
+    $q.notify({
+      message: '请选择一个数据修改',
+      position: 'top',
+      type: 'warning',
+    })
+  } else {
+    onReset()
+    console.log(selected.value[0])
+  }
+}
+
 
 //导出数据
 function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | undefined, row: any) {
