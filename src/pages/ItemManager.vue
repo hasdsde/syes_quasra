@@ -4,8 +4,10 @@
       <q-btn class="shadow-1" unelevated color="primary" label="刷新" :loading="loading[0]"
              @click="simulateProgress(0)" icon="replay"/>
       <q-btn class="shadow-1" unelevated color="secondary" label="新增"
-             @click="windowDisplay=true;buttonStatus='新增物品'"
+             @click="windowDisplay=true;buttonStatus='新增物品';onReset()"
              icon="add_circle_outline"/>
+      <q-btn class="shadow-1" unelevated color="purple" label="修改" @click="checkCounts();buttonStatus='修改物品'"
+             icon="edit"/>
     </div>
     <!--  表格  -->
     <div class="q-pa-md" style="margin-left:auto">
@@ -52,7 +54,7 @@
           <q-btn icon="close" flat round dense v-close-popup/>
         </q-card-section>
         <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
-          <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="iteminfo.clearall()" class="q-gutter-md">
+          <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset()" class="q-gutter-md">
             <q-input
               v-if="buttonStatus==='修改物品'"
               ref="iteminfo.idRef.value"
@@ -94,6 +96,7 @@
               hint="请输入用户id"
               lazy-rules
               :rules="idRules"
+              :readonly="buttonStatus==='修改物品'"
             />
             <q-toggle v-model="iteminfo.accept.value" label="同意许可协议"/>
 
@@ -111,14 +114,10 @@
 
 <script setup lang="ts">
 //插件初始化
-import {useQuasar} from "quasar";
 import {ref} from "vue";
-import {api} from "../boot/axios";
-import {CommFail, CommSeccess} from "components/common";
-import {Iteminfo, Userinfo} from "components/models";
-import {userInfo} from "os";
-
-const $q = useQuasar()
+import {api} from "boot/axios";
+import {CommFail, CommSeccess, CommWarn} from "components/common";
+import {Iteminfo} from "components/models";
 
 
 //刷新按钮
@@ -161,7 +160,7 @@ loadPage()
 function loadPage() {
 
   //获取表格属性
-  if (localStorage.getItem("itemcolumns") == null) {
+  if (localStorage.getItem("itemcolumns") == null || localStorage.getItem("itemcolumns") == "undefined") {
     api.get("/tablemenu/item").then(res => {
       console.log('刷新表格') //握草怪死了，改成 刷新了表格 就会报错
       if (columns) {
@@ -187,7 +186,7 @@ function loadPage() {
 
 //切换按钮状态
 function switchbutton(value: { row: { id: string; }; value: any; }) {
-  api.get("/item/status?id=" + value.row.id + "&status=" + !value.value).then(res => {
+  api.get("/item/status?id=" + value.row.id + "&status=" + !value.value).then(() => {
     loadPage()
     CommSeccess("操作成功")
   })
@@ -211,12 +210,49 @@ function onReset() {
   iteminfo.clearall()
 }
 
+//修改物品
+//修改物品
+function checkCounts() {
+  buttonStatus = '修改物品'
+  if (selected.value.length != 1) {
+    CommWarn("请选择一个数据进行修改")
+  } else {//@ts-ignore
+    iteminfo.id.value = selected.value[0].id//@ts-ignore
+    iteminfo.title.value = selected.value[0].title//@ts-ignore
+    iteminfo.description.value = selected.value[0].description//@ts-ignore
+    iteminfo.userid.value = selected.value[0].userid//@ts-ignore
+    iteminfo.price.value = selected.value[0].price//@ts-ignore
+    windowDisplay.value = true
+  }
+}
+
 //提交新增或修改
 function onSubmit() {
   if (iteminfo.accept.value == true) {
     if (buttonStatus === '新增物品') {
       if (iteminfo.id.value != '' && iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
         api.post("/item/", {
+          "title": iteminfo.title.value,
+          "description": iteminfo.description.value,
+          "price": iteminfo.price.value,
+          "userid": iteminfo.userid.value
+        }).then(res => {
+          if (res.status === 200) {
+            CommSeccess("提交成功")
+          } else {
+            CommFail("提交失败")
+          }
+          windowDisplay.value = false
+          loadPage()
+        })
+      } else {
+        CommFail("请检查输入格式是否正确")
+      }
+    }
+    if (buttonStatus === '修改物品') {
+      if (iteminfo.id.value != '' && iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
+        api.put("/item/", {
+          "id": iteminfo.id.value,
           "title": iteminfo.title.value,
           "description": iteminfo.description.value,
           "price": iteminfo.price.value,

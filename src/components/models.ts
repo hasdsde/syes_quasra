@@ -23,6 +23,7 @@ export class Iteminfo {
   accept = ref(false)
 
   SetItem(value: Iteminfo) {
+    Object.assign(this, value)
     this.id = value.id
     this.idRef = value.idRef
     this.title = value.title

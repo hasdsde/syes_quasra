@@ -133,12 +133,11 @@
 </template>
 
 <script setup lang="ts">
-import {Notify} from 'quasar'
-import {ref, computed, Ref, registerRuntimeCompiler} from "vue";
-import axios, {api} from "boot/axios";
 import {exportFile, useQuasar} from 'quasar'
+import {ref, Ref} from "vue";
+import {api} from "boot/axios";
 import {Userinfo} from "components/models";
-import {CommFail, CommSeccess} from "components/common";
+import {CommFail, CommSeccess, CommWarn} from "components/common";
 
 //插件初始化
 const $q = useQuasar()
@@ -356,11 +355,7 @@ function onReset() {
 function checkCounts() {
   buttonStatus = '修改用户'
   if (selected.value.length != 1) {
-    $q.notify({
-      message: '请选择一个数据修改',
-      position: 'top',
-      type: 'warning',
-    })
+    CommWarn("请选择一个用户进行修改")
   } else {//@ts-ignore
     userinfo.id.value = selected.value[0].id//@ts-ignore
     userinfo.name.value = selected.value[0].realname//@ts-ignore

@@ -20,3 +20,13 @@ export function CommFail(message: any) {
     group: false,
   })
 }
+
+export function CommWarn(message: any) {
+  Notify.create({
+    icon: 'error',
+    type: 'warning',
+    message: message,
+    position: 'top',
+    group: false,
+  })
+}
