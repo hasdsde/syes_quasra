@@ -23,7 +23,7 @@
         v-model:selected="selected"
       >
         <template v-slot:body-cell-enablesale="props">
-          <q-td :props="props">
+          <q-td>
             <div @click="switchbutton(props)">
               <q-btn v-if="props.value" color="primary" label="上架" size="sm"/>
               <q-btn v-if="!props.value" color="red" label="下架" size="sm"/>
