@@ -33,7 +33,12 @@
         :selected-rows-label="getSelectedString"
         selection="multiple"
         v-model:selected="selected"
+        :loading="loadingPage"
       />
+      <!--    加载动画，加了报错    -->
+      <!--      <template v-slot:loading>-->
+      <!--        <q-inner-loading showing color="primary"/>-->
+      <!--      </template>-->
     </div>
 
     <!--    <div class="q-mt-md">-->
@@ -175,10 +180,11 @@ function handlePage() {
 //获取后端数据
 let columns = ref([])
 let rows = ref([])
+let loadingPage = ref(false)
 loadPage()
 
 function loadPage() {
-
+  loadingPage.value = true
   //获取表格属性
   if (localStorage.getItem("usercolumns") == null) {
     api.get("/tablemenu/user").then(res => {
@@ -197,6 +203,10 @@ function loadPage() {
     rows.value = res.data.data.data
     Pagecount.value = Math.ceil(res.data.data.total / PageItem)
   })
+
+  setTimeout(() => {
+    loadingPage.value = false
+  }, 1000)
 
 }
 
