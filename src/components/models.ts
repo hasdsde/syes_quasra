@@ -9,6 +9,47 @@ export interface Meta {
   totalCount: number;
 }
 
+export class Iteminfo {
+  id = ref()
+  idRef = ref()
+  title = ref()
+  titleRef = ref()
+  description = ref()
+  descriptionRef = ref()
+  price = ref()
+  priceRef = ref()
+  userid = ref()
+  useridRef = ref()
+  accept = ref(false)
+
+  SetItem(value: Iteminfo) {
+    this.id = value.id
+    this.idRef = value.idRef
+    this.title = value.title
+    this.titleRef = value.titleRef
+    this.description = value.description
+    this.descriptionRef = value.descriptionRef
+    this.price = value.price
+    this.priceRef = value.priceRef
+    this.userid = value.userid
+    this.useridRef = value.useridRef
+  }
+
+  clearall() {
+    this.id.value = ''
+    this.idRef.value = ''
+    this.title.value = ''
+    this.titleRef.value = ''
+    this.description.value = ''
+    this.descriptionRef.value = ''
+    this.price.value = ''
+    this.priceRef.value = ''
+    this.userid.value = ''
+    this.useridRef.value = ''
+    this.accept.value = false
+  }
+}
+
 export class Userinfo {
   name = ref()
   nameRef = ref()

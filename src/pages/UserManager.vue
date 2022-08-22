@@ -138,6 +138,7 @@ import {ref, computed, Ref, registerRuntimeCompiler} from "vue";
 import axios, {api} from "boot/axios";
 import {exportFile, useQuasar} from 'quasar'
 import {Userinfo} from "components/models";
+import {CommFail, CommSeccess} from "components/common";
 
 //插件初始化
 const $q = useQuasar()
@@ -146,16 +147,12 @@ const $q = useQuasar()
 let loading = ref([false,])
 
 function simulateProgress(number: number) {
-  loading.value[number] = true
+  loading.value[number] = true //这是那个加载动画
+  localStorage.removeItem("usercolumns")
   loadPage()
   setTimeout(() => {
     loading.value[number] = false
-    $q.notify({
-      type: 'positive',
-      color: 'positive',
-      message: '刷新完成',
-      position: 'top'
-    })
+    CommSeccess("刷新成功")
   }, 500)
 
 }
@@ -190,7 +187,6 @@ function loadPage() {
       columns.value.forEach((item: any) => {
         item.align = "center"
       })
-
       localStorage.setItem("usercolumns", JSON.stringify(columns))
     })
   } else {
@@ -272,19 +268,9 @@ function deleteUsers_ById(idlist: any) {
 function deleteUserById(id: string) {
   api.delete("user/" + id).then(res => {
     if (res.data.code == 200) {
-      $q.notify({
-        type: 'positive',
-        color: 'positive',
-        message: '成功删除' + res.data.data,
-        position: 'top'
-      })
+      CommSeccess('成功删除')
     } else {
-      $q.notify({
-        type: 'negative',
-        color: 'negative',
-        message: '删除失败' + id,
-        position: 'top'
-      })
+      CommFail('删除失败')
     }
   })
 }
@@ -299,14 +285,14 @@ let buttonStatus: string = '新增用户'
 let accept = ref(false)
 //@ts-ignore 我不知道为什么，但是它能跑
 let passwordRules = ref([(val: Ref<string>) => (val == userinfo.password.value) || '两次输入密码不一致'])
-let nameRules = ref([(val: string | any[]) => (val && val.length > 0) || 'Please type something'])
+let nameRules = ref([(val: string | any[]) => (val && val.length > 0) || '输入值为空'])
 
 let ageRules = ref([
   (val: string | null) => (val !== null && val !== '') || '请输入年龄',
   (val: number) => (val > 0 && val < 100) || '数字格式不正确'
 ])
 let idRules = ref([
-  (val: number) => (val > 0 && val < 20229999999) || '请输入正确的学号'
+  (val: number) => (val > 20191111111 && val < 20229999999) || '请输入正确的学号'
 ])
 
 //新增用户提交
@@ -344,12 +330,7 @@ function onSubmit() {
           "id": userinfo.id.value
         }).then(res => {
           if (res.status == 200) {
-            $q.notify({
-              icon: 'done',
-              color: 'positive',
-              message: '提交成功',
-              position: 'top'
-            })
+            CommSeccess("提交成功")
             loadPage()
           }
         })
@@ -359,18 +340,10 @@ function onSubmit() {
       onReset()
       loadPage()
     } else {
-      $q.notify({
-        color: 'negative',
-        message: '请检查格式是否正确',
-        position: 'top'
-      })
+      CommFail('请检查格式是否正确')
     }
   } else {
-    $q.notify({
-      color: 'negative',
-      message: '请先同意协议',
-      position: 'top'
-    })
+    CommFail('请同意协议')
   }
 }
 

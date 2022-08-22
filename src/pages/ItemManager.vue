@@ -1,20 +1,257 @@
 <template>
-  <!-- 顶部提示 -->
   <div class="q-pa-md q-gutter-sm">
-    <q-banner class="bg-primary text-white">
-      这个是物品管理页面
-      <template v-slot:action>
-        <q-btn flat color="white" label="Dismiss"/>
-        <q-btn flat color="white" label="Update Credit Card"/>
-      </template>
-    </q-banner>
+    <div class="header">
+      <q-btn class="shadow-1" unelevated color="primary" label="刷新" :loading="loading[0]"
+             @click="simulateProgress(0)" icon="replay"/>
+      <q-btn class="shadow-1" unelevated color="secondary" label="新增"
+             @click="windowDisplay=true;buttonStatus='新增物品'"
+             icon="add_circle_outline"/>
+    </div>
+    <!--  表格  -->
+    <div class="q-pa-md" style="margin-left:auto">
+      <q-table
+        title="物品信息管理"
+        :rows="rows"
+        :columns="columns"
+        row-key="id"
+        hide-pagination
+        :pagination="pagination"
+        :selected-rows-label="getSelectedString"
+        selection="multiple"
+        v-model:selected="selected"
+      >
+        <template v-slot:body-cell-enablesale="props">
+          <q-td :props="props">
+            <div @click="switchbutton(props)">
+              <q-btn v-if="props.value" color="primary" label="上架" size="sm"/>
+              <q-btn v-if="!props.value" color="red" label="下架" size="sm"/>
+            </div>
+          </q-td>
+        </template>
+      </q-table>
+    </div>
+    <!--  分页  -->
+    <div class="q-pa-lg flex flex-center">
+      <q-pagination
+        v-model="currentPage"
+        :max="Pagecount"
+        direction-links
+        @click="handlePage()"
+        style="min-width: 2em"
+      />
+    </div>
+
+
+    <!--  新增，修改  -->
+    <!--新增弹出框-->
+    <q-dialog v-model="windowDisplay" position="right">
+      <q-card class="column full-height" style="width: 400px">
+        <q-card-section class="row items-center q-pb-none ">
+          <div class="text-h6">{{ buttonStatus }}</div>
+          <q-space/>
+          <q-btn icon="close" flat round dense v-close-popup/>
+        </q-card-section>
+        <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
+          <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="iteminfo.clearall()" class="q-gutter-md">
+            <q-input
+              v-if="buttonStatus==='修改物品'"
+              ref="iteminfo.idRef.value"
+              v-model="iteminfo.id.value"
+              label="编号"
+              hint="物品编号"
+              lazy-rules
+              :readonly="buttonStatus==='修改物品'"
+              :rules="contentRules"
+            />
+            <q-input
+              ref="iteminfo.titleRef.value"
+              v-model="iteminfo.title.value"
+              label="标题"
+              hint="输入正确物品标题"
+              lazy-rules
+              :rules="contentRules"
+            />
+            <q-input
+              ref="iteminfo.descriptionRef.value"
+              v-model="iteminfo.description.value"
+              label="描述"
+              hint="请输入描述"
+              lazy-rules
+              :rules="contentRules"
+            />
+            <q-input
+              ref="iteminfo.priceRef.value"
+              v-model="iteminfo.price.value"
+              label="价格"
+              hint="请输入价格"
+              lazy-rules
+              :rules="priceRules"
+            />
+            <q-input
+              ref="iteminfo.useridRef.value"
+              v-model="iteminfo.userid.value"
+              label="用户id"
+              hint="请输入用户id"
+              lazy-rules
+              :rules="idRules"
+            />
+            <q-toggle v-model="iteminfo.accept.value" label="同意许可协议"/>
+
+            <div>
+              <q-btn v-if="buttonStatus==='新增物品'" label="提交" type="submit" color="primary"/>
+              <q-btn v-if="buttonStatus==='修改物品'" label="提交修改" type="submit" color="primary"/>
+              <q-btn v-if="buttonStatus==='新增物品'" label="重置" type="reset" color="primary" flat class="q-ml-sm"/>
+            </div>
+          </form>
+        </div>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+//插件初始化
+import {useQuasar} from "quasar";
+import {ref} from "vue";
+import {api} from "../boot/axios";
+import {CommFail, CommSeccess} from "components/common";
+import {Iteminfo, Userinfo} from "components/models";
+import {userInfo} from "os";
 
+const $q = useQuasar()
+
+
+//刷新按钮
+let loading = ref([false,])
+
+function simulateProgress(number: number) {
+  loading.value[number] = true //这是那个加载动画
+  localStorage.removeItem("itemcolumns")
+  loadPage()
+  setTimeout(() => {
+    loading.value[number] = false
+    CommSeccess("刷新成功")
+  }, 500)
+
+}
+
+
+//表格多选框
+const selected = ref([])
+
+function getSelectedString() {
+  return selected.value.length === 0 ? '' : `已选择${selected.value.length}项${selected.value.length > 1 ? '' : ''}`
+}
+
+
+//分页
+const currentPage = ref(1) //当前页面
+let Pagecount = ref(1)  //页数
+const PageItem = 10   //页面数据数量
+const pagination = ref({rowsPerPage: 10}) //表格显示的最大数量
+function handlePage() {
+  loadPage();
+}
+
+//获取后端数据
+let columns = ref([])
+let rows = ref([])
+loadPage()
+
+function loadPage() {
+
+  //获取表格属性
+  if (localStorage.getItem("itemcolumns") == null) {
+    api.get("/tablemenu/item").then(res => {
+      console.log('刷新表格') //握草怪死了，改成 刷新了表格 就会报错
+      if (columns) {
+        columns.value = res.data.data
+        columns.value.forEach((item) => {
+          //@ts-ignore
+          item.align = "center"
+        })
+      }
+      localStorage.setItem("itemcolumns", JSON.stringify(columns))
+    })
+  } else {
+    // @ts-ignore 不清楚怎么办到的，能跑就行
+    columns = JSON.parse(localStorage.getItem("itemcolumns"))._value
+  }
+//获取分页数据
+  api.get("/item/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value).then(res => {
+    rows.value = res.data.data.data
+    Pagecount.value = Math.ceil(res.data.data.total / PageItem)
+  })
+
+}
+
+//切换按钮状态
+function switchbutton(value: { row: { id: string; }; value: any; }) {
+  api.get("/item/status?id=" + value.row.id + "&status=" + !value.value).then(res => {
+    loadPage()
+    CommSeccess("操作成功")
+  })
+}
+
+//新增物品
+const iteminfo = new Iteminfo();
+let windowDisplay = ref(false)
+let buttonStatus: string = '新增物品'
+//规则
+let priceRules = ref([
+  (val: number) => (val > 0 && val < 9999) || '价格过高或过低'
+])
+let contentRules = ref([(val: string | any[]) => (val && val.length > 0) || '输入值为空'])
+let idRules = ref([
+  (val: number) => (val > 20191111111 && val < 20229999999) || '请输入正确的学号'
+])
+
+//清空
+function onReset() {
+  iteminfo.clearall()
+}
+
+//提交新增或修改
+function onSubmit() {
+  if (iteminfo.accept.value == true) {
+    if (buttonStatus === '新增物品') {
+      if (iteminfo.id.value != '' && iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
+        api.post("/item/", {
+          "title": iteminfo.title.value,
+          "description": iteminfo.description.value,
+          "price": iteminfo.price.value,
+          "userid": iteminfo.userid.value
+        }).then(res => {
+          if (res.status === 200) {
+            CommSeccess("提交成功")
+          } else {
+            CommFail("提交失败")
+          }
+          windowDisplay.value = false
+          loadPage()
+        })
+      } else {
+        CommFail("请检查输入格式是否正确")
+      }
+    }
+  } else {
+    CommFail('请同意协议')
+  }
+}
 </script>
 
 <style scoped>
 
+.my-table-details {
+  font-size: 0.85em;
+  font-style: italic;
+  max-width: 200px;
+  white-space: normal;
+  color: #555;
+  margin-top: 4px;
+}
+
+.header .q-btn {
+  margin-right: 15px;
+}
 </style>
