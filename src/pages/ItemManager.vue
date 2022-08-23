@@ -8,7 +8,17 @@
              icon="add_circle_outline"/>
       <q-btn class="shadow-1" unelevated color="purple" label="修改" @click="checkCounts();buttonStatus='修改物品'"
              icon="edit"/>
+      <q-btn class="shadow-1" unelevated color="red" label="删除" @click="showNotif" icon="delete_forever"/>
+      <q-btn class="shadow-1" unelevated color="brown-5" label="导出" @click="exportTable" icon="file_download"/>
+      <q-input label="搜索" v-model="searchtext" :dense=true
+               style="display: inline-block;float: right;margin-right: 20px" debounce="1000">
+        <template v-slot:append>
+          <q-icon name="search" @click="handlesearch()" class="cursor-pointer"/>
+          <q-icon v-if="searchtext !== ''" name="close" @click="handleRest" class="cursor-pointer"/>
+        </template>
+      </q-input>
     </div>
+
     <!--  表格  -->
     <div class="q-pa-md" style="margin-left:auto">
       <q-table
@@ -21,7 +31,13 @@
         :selected-rows-label="getSelectedString"
         selection="multiple"
         v-model:selected="selected"
+        :loading="loadingPage"
       >
+        <!--    加载动画    -->
+
+        <q-inner-loading showing color="primary" label="加载..."/>
+
+        <!--    自定义表格属性    -->
         <template v-slot:body-cell-enablesale="props">
           <q-td>
             <div @click="switchbutton(props)">
@@ -118,6 +134,7 @@ import {ref} from "vue";
 import {api} from "boot/axios";
 import {CommFail, CommSeccess, CommWarn} from "components/common";
 import {Iteminfo} from "components/models";
+import {exportFile, useQuasar} from "quasar";
 
 
 //刷新按钮
@@ -155,22 +172,28 @@ function handlePage() {
 //获取后端数据
 let columns = ref([])
 let rows = ref([])
+
+let loadingPage = ref(false)
 loadPage()
 
 function loadPage() {
-
+  loadingPage.value = true
   //获取表格属性
-  if (localStorage.getItem("itemcolumns") == null || localStorage.getItem("itemcolumns") == "undefined") {
+  if (localStorage.getItem("itemcolumns") == null || localStorage.getItem("itemcolumns") == undefined) {
     api.get("/tablemenu/item").then(res => {
-      console.log('刷新表格') //握草怪死了，改成 刷新了表格 就会报错
-      if (columns) {
-        columns.value = res.data.data
-        columns.value.forEach((item) => {
-          //@ts-ignore
-          item.align = "center"
-        })
+      // console.log('刷新表格') //握草怪死了，改成 刷新了表格 就会报错
+      if (columns == undefined) {
+        loadPage()
       }
+      columns.value = res.data.data
+      columns.value.forEach((item) => {
+        //@ts-ignore
+        item.align = "center"
+      })
+      // console.log(columns)
       localStorage.setItem("itemcolumns", JSON.stringify(columns))
+      // console.log(localStorage.getItem("itemcolumns"))
+      // console.log(JSON.parse(localStorage.getItem("itemcolumns")))
     })
   } else {
     // @ts-ignore 不清楚怎么办到的，能跑就行
@@ -181,6 +204,9 @@ function loadPage() {
     rows.value = res.data.data.data
     Pagecount.value = Math.ceil(res.data.data.total / PageItem)
   })
+  setTimeout(() => {
+    loadingPage.value = false
+  }, 1000)
 
 }
 
@@ -272,6 +298,120 @@ function onSubmit() {
     }
   } else {
     CommFail('请同意协议')
+  }
+}
+
+//搜索
+let searchtext = ref('');
+
+function handlesearch() {
+  api.get("/item/" + searchtext.value).then(res => {
+    rows.value.splice(0)
+    for (let i: number = 0; i < res.data.data.length; i++) {
+      //@ts-ignore
+      rows.value[i] = res.data.data[i]
+    }
+  })
+}
+
+function handleRest() {
+  searchtext.value = "";
+  console.log("重置了按钮")
+  loadPage()
+}
+
+//删除
+const $q = useQuasar()
+
+function showNotif() {
+  $q.notify({
+    message: '确定要删除所选项目吗？',
+    type: 'negative',
+    position: 'top',
+    actions: [
+      {
+        label: '确定', color: 'yellow', handler: () => {
+          const idlist: any = ref([])
+          selected.value.forEach((item: any, index) => {
+            idlist.value.push(item.id)
+          })
+          console.log(JSON.stringify(idlist.value))
+          // 删除用户
+          deleteItems_ById(idlist)
+          // 刷新页面
+          setTimeout(() => {
+            loadPage()
+          }, 500)
+        }
+      },
+      {
+        label: '取消', color: 'white', handler: () => { /* ... */
+        }
+      }
+    ]
+  })
+}
+
+// 根据id删除多个用户
+function deleteItems_ById(idlist: any) {
+  idlist.value.forEach((item: string) => {
+    // 先用枚举删除将就一下
+    deleteItemById(item)
+  })
+}
+
+// 根据id删除单个用户
+function deleteItemById(id: string) {
+  api.delete("item/" + id).then(res => {
+    if (res.data.code == 200) {
+      CommSeccess('成功删除')
+    } else {
+      CommFail('删除失败')
+    }
+  })
+}
+
+//导出
+//导出数据
+function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | undefined, row: any) {
+  let formatted = formatFn !== void 0
+    ? formatFn(val, row)
+    : val
+
+  formatted = formatted === void 0 || formatted === null
+    ? ''
+    : String(formatted)
+
+  formatted = formatted.split('"').join('""')
+  return `"${formatted}"`
+}
+
+function exportTable() {
+  //@ts-ignore
+  const content = [columns.map(col => wrapCsvValue(col.label))].concat(
+    //@ts-ignore
+    rows.value.map(row => columns.map(col => wrapCsvValue(
+      typeof col.field === 'function'
+        ? col.field(row)
+        : row[col.field === void 0 ? col.name : col.field],
+      col.format,
+      row
+    )).join(','))
+  ).join('\r\n')
+
+  const status = exportFile(
+    'table-export.csv',
+    content,
+    'text/csv'
+  )
+
+
+  if (status !== true) {
+    $q.notify({
+      message: 'Browser denied file download...',
+      color: 'negative',
+      icon: 'warning'
+    })
   }
 }
 </script>

@@ -10,7 +10,7 @@ const mutation: MutationTree<MenuStateInterface> = {
   },
   thismenu(state: any, value: String) {
     state.thismenu = value;
-  }
+  },
 };
 
 export default mutation;
