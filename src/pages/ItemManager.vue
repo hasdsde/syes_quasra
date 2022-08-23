@@ -197,7 +197,15 @@ function loadPage() {
     })
   } else {
     // @ts-ignore 不清楚怎么办到的，能跑就行
-    columns = JSON.parse(localStorage.getItem("itemcolumns"))._value
+    const localInfo = JSON.parse(localStorage.getItem("itemcolumns"))._value
+    if (localInfo == undefined) {
+      setTimeout(() => {
+        simulateProgress(0)
+      }, 500)
+      console.log('刷新快了');
+    } else {
+      columns = localInfo
+    }
   }
 //获取分页数据
   api.get("/item/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value).then(res => {
