@@ -18,7 +18,6 @@
                 v-ripple
                 :to="child.link"
                 :active="link === child.link"
-                @click="handleLink(child.link,child,item)"
                 active-class="my-menu-link"
               >
                 <q-item-section avatar>
@@ -41,7 +40,9 @@ import {ref} from 'vue'
 import {useStore} from "src/store";
 import {useRouter} from "vue-router/dist/vue-router";
 import {watch} from "vue";
+import {menu} from "src/components/models";
 
+let menus = ref(menu)
 //监视路由变化，将变化应用到左侧栏
 let link = ref()
 const $store = useStore()
@@ -49,29 +50,9 @@ let $router = useRouter()
 watch(() => $router.currentRoute.value.path, (newValue, oldValue) => {
   link.value = $router.currentRoute.value.path.replace("/", '')
 }, {immediate: true})
+//获取菜单
 
 
-//菜单数据
-let menus = ref([
-  {
-    icon: 'home', label: '主页', id: 1, isopen: true, children: [
-      {link: 'Dashboard', icon: 'donut_large', desc: '仪表盘', id: 4,},
-      {link: 'CheckInfo', icon: 'notifications_active', desc: '实时监控', id: 5},
-    ]
-  },
-  {
-    icon: 'perm_identity', label: '管理', isopen: false, id: 2, children: [
-      {link: 'UserManager', icon: 'people_alt', desc: '用户管理', id: 6},
-      {link: 'ItemManager', icon: 'shopping_bag', desc: '物品管理', id: 7},
-    ]
-  },
-  {
-    icon: 'settings', label: '设置', id: 3, isopen: false, children: [
-      {link: 'UserSetting', icon: 'admin_panel_settings', desc: '用户设置', id: 8},
-      {link: 'About', icon: 'info', desc: '关于', id: 9},
-    ]
-  }
-])
 //储存菜单展开或关闭数据
 if (!localStorage.getItem('menus')) {
   localStorage.setItem('menus', JSON.stringify(menus))
@@ -79,18 +60,10 @@ if (!localStorage.getItem('menus')) {
   menus.value = JSON.parse(localStorage.getItem('menus'))._value
 }
 
+
 //点击时修改展开数据
 function handleOpen() {
   localStorage.setItem('menus', JSON.stringify(menus))
-}
-
-//点击时修改选中数据
-function handleLink(value, child, item) {
-  this.link = value
-  $store.commit("menus/thismenu", child.desc)
-  $store.commit("menus/uppermenu", item.label)
-  localStorage.setItem("menus/thismenu", child.desc)
-  localStorage.setItem("menus/uppermenu", item.label)
 }
 
 

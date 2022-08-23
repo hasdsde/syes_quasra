@@ -18,11 +18,9 @@
         <!--    中间标题    -->
         <q-toolbar-title style="font-size: 14px">
           <q-breadcrumbs>
-            <q-breadcrumbs-el :label="handleMenu()" icon="home" style="color: white"/>
-            <q-breadcrumbs-el :label="handleMenuinfo()" icon="widgets" style="color: white"/>
+            <q-breadcrumbs-el :label="positions[0]" icon="home" style="color: white"/>
+            <q-breadcrumbs-el :label="positions[1]" icon="widgets" style="color: white"/>
             <q-breadcrumbs-el label="详情" style="color: white"/>
-
-
           </q-breadcrumbs>
         </q-toolbar-title>
 
@@ -54,41 +52,44 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch} from 'vue';
-
-const $store = useStore()
+import {ref, watch} from 'vue';
 import Aside from '../components/Aside.vue';
 import {useStore} from "src/store";
+import {menu} from "components/models";
+import {useRouter} from "vue-router/dist/vue-router";
 
+const $router = useRouter()
+const $store = useStore()
 
-function handleMenu() {
-  if ($store.state.menus.uppermenu === 'undefined') {
-    if (localStorage.getItem("menus/uppermenu")) {
-      return localStorage.getItem("menus/uppermenu")
-    } else {
-      return '主页'
-    }
-  } else {
-    return $store.state.menus.uppermenu
-  }
-}
-
-function handleMenuinfo() {
-  if ($store.state.menus.thismenu === 'undefined') {
-    if (localStorage.getItem("menus/thismenu")) {
-      return localStorage.getItem("menus/thismenu")
-    } else {
-      return '仪表盘'
-    }
-  } else {
-    return $store.state.menus.thismenu
-  }
-}
-
-
+//展开收起侧边栏
 const leftDrawerOpen = ref(false)
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
+
+
+//面包屑
+let menus = ref(menu)
+let positions = ref()
+//面包屑寻找数据
+watch(() => $router.currentRoute.value.path, (newValue, oldValue) => {
+  positions.value = findTitle()
+  console.log(positions)
+}, {immediate: true})
+
+function findTitle() {
+  let position = []
+  for (let i = 0; i < menus.value.length; i++) {
+    for (let j = 0; j < menus.value[i].children.length; j++) {
+      if (menus.value[i].children[j].link === $router.currentRoute.value.path.replace("/", '')) {
+        position[0] = menus.value[i].label
+        position[1] = menus.value[i].children[j].desc
+        return position
+      }
+    }
+  }
+}
+
+
 </script>
