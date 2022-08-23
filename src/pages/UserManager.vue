@@ -188,6 +188,9 @@ function loadPage() {
   //获取表格属性
   if (localStorage.getItem("usercolumns") == null) {
     api.get("/tablemenu/user").then(res => {
+      if (columns == undefined) {
+        loadPage()
+      }
       columns.value = res.data.data
       columns.value.forEach((item: any) => {
         item.align = "center"

@@ -179,9 +179,12 @@ loadPage()
 function loadPage() {
   loadingPage.value = true
   //获取表格属性
-  if (localStorage.getItem("itemcolumns") == null || localStorage.getItem("itemcolumns") == "undefined") {
+  if (localStorage.getItem("itemcolumns") == null || localStorage.getItem("itemcolumns") == undefined) {
     api.get("/tablemenu/item").then(res => {
       // console.log('刷新表格') //握草怪死了，改成 刷新了表格 就会报错
+      if (columns == undefined) {
+        loadPage()
+      }
       columns.value = res.data.data
       columns.value.forEach((item) => {
         //@ts-ignore

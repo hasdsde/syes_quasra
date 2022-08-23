@@ -17,7 +17,6 @@
                 clickable
                 v-ripple
                 :to="child.link"
-
                 :active="link === child.link"
                 @click="handleLink(child.link,child,item)"
                 active-class="my-menu-link"
@@ -40,13 +39,18 @@
 <script setup>
 import {ref} from 'vue'
 import {useStore} from "src/store";
+import {useRouter} from "vue-router/dist/vue-router";
+import {watch} from "vue";
 
+//监视路由变化，将变化应用到左侧栏
+let link = ref()
 const $store = useStore()
-//当前选中选项
-let link = ref(localStorage.getItem("link"))
-if (link == null) {
-  link = 'Dashboard'
-}
+let $router = useRouter()
+watch(() => $router.currentRoute.value.path, (newValue, oldValue) => {
+  link.value = $router.currentRoute.value.path.replace("/", '')
+}, {immediate: true})
+
+
 //菜单数据
 let menus = ref([
   {
@@ -83,7 +87,6 @@ function handleOpen() {
 //点击时修改选中数据
 function handleLink(value, child, item) {
   this.link = value
-  localStorage.setItem("link", value)
   $store.commit("menus/thismenu", child.desc)
   $store.commit("menus/uppermenu", item.label)
   localStorage.setItem("menus/thismenu", child.desc)

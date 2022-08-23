@@ -12,9 +12,17 @@
 </template>
 
 <script setup>
+import {useStore} from "src/store";
 
+
+const $store = useStore()
+homePage()
+
+function homePage() {
+  localStorage.setItem("menus/thismenu", "仪表盘")
+  localStorage.setItem("menus/uppermenu", "主页")
+}
 </script>
-
 <style scoped>
 
 </style>
