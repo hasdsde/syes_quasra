@@ -14,7 +14,6 @@
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
-
         />
         <!--    中间标题    -->
         <q-toolbar-title style="font-size: 14px">
@@ -35,6 +34,10 @@
       show-if-above
       bordered
       :breakpoint="500"
+
+      :mini="miniState"
+      @mouseover="miniState = false"
+      @mouseout="miniState = true"
     >
       <q-list>
         <q-item-label header>
@@ -70,6 +73,7 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
+let miniState = ref(true)
 
 //面包屑
 let menus = ref(menu)

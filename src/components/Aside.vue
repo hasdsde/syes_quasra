@@ -1,7 +1,6 @@
 <template>
   <div class="q-pa-md" style="max-width: 350px">
     <q-list bordered class="rounded-borders">
-
       <q-expansion-item
         v-for="item in menus"
         v-model="item.isopen"
@@ -11,7 +10,7 @@
         @click="handleOpen()"
       >
         <q-card v-for="child in item.children">
-          <div class="q-pa-md" style="max-width: 500px">
+          <div class="q-pa-md " style="max-width: 500px">
             <q-list bordered padding class="rounded-borders text-primary ">
               <q-item
                 clickable
