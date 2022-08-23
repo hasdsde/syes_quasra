@@ -12,7 +12,7 @@
       >
         <q-card v-for="child in item.children">
           <div class="q-pa-md" style="max-width: 500px">
-            <q-list bordered padding class="rounded-borders text-primary">
+            <q-list bordered padding class="rounded-borders text-primary ">
               <q-item
                 clickable
                 v-ripple
@@ -50,7 +50,6 @@ let $router = useRouter()
 watch(() => $router.currentRoute.value.path, (newValue, oldValue) => {
   link.value = $router.currentRoute.value.path.replace("/", '')
 }, {immediate: true})
-//获取菜单
 
 
 //储存菜单展开或关闭数据

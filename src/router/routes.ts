@@ -10,6 +10,7 @@ const routes: RouteRecordRaw[] = [
       {path: 'CheckInfo', component: () => import('pages/CheckInfo.vue')},
       {path: 'UserManager', component: () => import('pages/UserManager.vue')},
       {path: 'ItemManager', component: () => import('pages/ItemManager.vue')},
+      {path: 'CommentManager', component: () => import('pages/CommentManager.vue')},
       {path: 'UserSetting', component: () => import('pages/UserSetting.vue')},
       {path: 'About', component: () => import('pages/About.vue')},
     ],

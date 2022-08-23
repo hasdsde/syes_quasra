@@ -2,7 +2,7 @@
 <template>
 
 
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh lpr lFr">
 
     <!-- 顶栏 -->
     <q-header elevated>
@@ -14,6 +14,7 @@
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
+
         />
         <!--    中间标题    -->
         <q-toolbar-title style="font-size: 14px">
@@ -33,12 +34,13 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
+      :breakpoint="500"
     >
       <q-list>
         <q-item-label header>
           后台管理系统
         </q-item-label>
-        <!--    真正的侧栏    -->
+        <!--        真正的侧栏-->
         <Aside/>
       </q-list>
     </q-drawer>

@@ -119,6 +119,7 @@ export let menu = ref([
     icon: 'perm_identity', label: '管理', isopen: false, id: 2, children: [
       {link: 'UserManager', icon: 'people_alt', desc: '用户管理', id: 6},
       {link: 'ItemManager', icon: 'shopping_bag', desc: '物品管理', id: 7},
+      {link: 'CommentManager', icon: 'chat', desc: '评论管理', id: 10},
     ]
   },
   {
