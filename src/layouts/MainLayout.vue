@@ -36,8 +36,6 @@
       :breakpoint="500"
 
       :mini="miniState"
-      @mouseover="miniState = false"
-      @mouseout="miniState = true"
     >
       <q-list>
         <!--        <q-item-label header class="q-mini-drawer-only">-->
@@ -70,8 +68,10 @@ const $store = useStore()
 //展开收起侧边栏
 const leftDrawerOpen = ref(false)
 
+//已弃用
 function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
+  // leftDrawerOpen.value = !leftDrawerOpen.value
+  miniState.value = !miniState.value
 }
 
 let miniState = ref(true)

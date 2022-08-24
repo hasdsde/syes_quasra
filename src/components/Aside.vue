@@ -33,11 +33,11 @@
       <template v-for="num in menus.length">
         <q-expansion-item
           v-model="menus[num-1].isopen"
-          expand-separator
           :icon="menus[num-1].icon"
           :label="menus[num-1].label"
           @click="handleOpen()"
           style="color: rgb(0,0,0)"
+          expand-separator
         >
           <q-card v-for="child in menus[num-1].children">
             <div class="q-pa-md " style="max-width: 500px">
@@ -62,6 +62,7 @@
             v-for="son in menus[num-1].children"
             v-model="menus[num-1].isopen"
             :icon="son.icon"
+            :to="son.link"
             :label="son.desc"
             @click="handleOpen()"
             :class="link===son.link?'q-expansion-active':'q-expansion-default'"
@@ -112,6 +113,10 @@ function handleOpen() {
 </script>
 
 <style scoped>
+.q-router-link--active {
+  color: rgb(25, 118, 210);
+}
+
 .q-pa-md {
   padding: 0;
 
@@ -126,7 +131,8 @@ function handleOpen() {
 }
 
 .my-menu-link {
-  color: white;
+  /*color: white;*/
+  color: rgb(25, 118, 210);
   background: #F2C037;
 }
 
@@ -138,7 +144,9 @@ function handleOpen() {
 .q-expansion-active {
   padding: 0 !important;
   margin: 4px 0;
-  color: white;
+  color: white !important;
   background-color: #F2C037;
 }
+
+
 </style>
