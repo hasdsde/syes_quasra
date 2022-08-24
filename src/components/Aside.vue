@@ -37,16 +37,16 @@
           :icon="menus[num-1].icon"
           :label="menus[num-1].label"
           @click="handleOpen()"
+          style="color: rgb(0,0,0)"
         >
           <q-card v-for="child in menus[num-1].children">
             <div class="q-pa-md " style="max-width: 500px">
-              <q-list bordered padding class="rounded-borders text-primary ">
+              <q-list bordered padding class="rounded-borders text-primary" style="padding: 4px 0">
                 <q-item
                   clickable
                   v-ripple
                   :to="child.link"
-                  :active="link === child.link"
-                  active-class="my-menu-link"
+                  :class="link === child.link?'my-menu-link':'q-expansion-default'"
                 >
                   <q-item-section avatar>
                     <q-icon :name="child.icon"/>
@@ -61,11 +61,11 @@
           <q-expansion-item
             v-for="son in menus[num-1].children"
             v-model="menus[num-1].isopen"
-            expand-separator
             :icon="son.icon"
-            :label="menus[num-1].label"
+            :label="son.desc"
             @click="handleOpen()"
-            style="color: aqua"
+            :class="link===son.link?'q-expansion-active':'q-expansion-default'"
+            style="padding: 4px 0"
           >
           </q-expansion-item>
         </template>
@@ -122,7 +122,7 @@ function handleOpen() {
 }
 
 .q-item__section {
-  padding-left: 20px;
+
 }
 
 .my-menu-link {
@@ -130,4 +130,15 @@ function handleOpen() {
   background: #F2C037;
 }
 
+.q-expansion-default {
+  color: rgb(25, 118, 210)
+}
+
+
+.q-expansion-active {
+  padding: 0 !important;
+  margin: 4px 0;
+  color: white;
+  background-color: #F2C037;
+}
 </style>
