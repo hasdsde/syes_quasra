@@ -22,10 +22,8 @@
                 <q-item-section avatar>
                   <q-icon :name="child.icon"/>
                 </q-item-section>
-
                 <q-item-section>{{ child.desc }}</q-item-section>
               </q-item>
-              <!--              <q-separator spaced/>-->
             </q-list>
           </div>
         </q-card>

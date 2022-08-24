@@ -40,11 +40,12 @@
       @mouseout="miniState = true"
     >
       <q-list>
-        <q-item-label header>
-          后台管理系统
-        </q-item-label>
+        <!--        <q-item-label header class="q-mini-drawer-only">-->
+        <!--          后台管理系统-->
+        <!--        </q-item-label>-->
         <!--        真正的侧栏-->
         <Aside/>
+
       </q-list>
     </q-drawer>
 
