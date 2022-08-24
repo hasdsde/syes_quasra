@@ -51,6 +51,36 @@ export class Iteminfo {
   }
 }
 
+export class Commentinfo {
+  id = ref('')
+  idRef = ref('')
+  itemid = ref('')
+  itemRef = ref('')
+  userid = ref('')
+  useridRef = ref('')
+  content = ref('')
+  contentRef = ref('')
+  tocommentid = ref('')
+  tocommentidRef = ref('')
+
+  Setitem(value: Commentinfo) {
+    Object.assign(value)
+  }
+
+  clearall() {
+    this.id.value = ''
+    this.idRef.value = ''
+    this.itemid.value = ''
+    this.itemRef.value = ''
+    this.userid.value = ''
+    this.useridRef.value = ''
+    this.content.value = ''
+    this.contentRef.value = ''
+    this.tocommentid.value = ''
+    this.tocommentidRef.value = ''
+  }
+}
+
 export class Userinfo {
   name = ref()
   nameRef = ref()

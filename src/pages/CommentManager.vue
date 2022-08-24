@@ -1,6 +1,17 @@
 <template>
   <!-- 顶部提示 -->
   <div class="q-pa-md q-gutter-sm">
+    <div class="header">
+      <q-btn class="shadow-1" unelevated color="primary" label="刷新" :loading="loading[0]"
+             @click="simulateProgress(0)" icon="replay"/>
+      <q-btn class="shadow-1" unelevated color="secondary" label="新增"
+             @click="windowDisplay=true;buttonStatus='新增评论';onReset()"
+             icon="add_circle_outline"/>
+      <q-btn class="shadow-1" unelevated color="purple" label="修改" @click="checkCounts();buttonStatus='修改评论'"
+             icon="edit"/>
+      <q-btn class="shadow-1" unelevated color="red" label="删除" @click="showNotif" icon="delete_forever"/>
+      <q-btn class="shadow-1" unelevated color="brown-5" label="导出" @click="exportTable" icon="file_download"/>
+    </div>
     <!--  表格  -->
     <div class="q-pa-md" style="margin-left:auto">
       <q-table
@@ -29,13 +40,95 @@
         style="min-width: 2em"
       />
     </div>
+    <!--  新增，修改  -->
+    <!--新增弹出框-->
+    <q-dialog v-model="windowDisplay" position="right">
+      <q-card class="column full-height" style="width: 400px">
+        <q-card-section class="row items-center q-pb-none ">
+          <div class="text-h6">{{ buttonStatus }}</div>
+          <q-space/>
+          <q-btn icon="close" flat round dense v-close-popup/>
+        </q-card-section>
+        <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
+          <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset()" class="q-gutter-md">
+            <q-input
+              v-if="buttonStatus==='修改评论'"
+              ref="commentinfo.idRef.value"
+              v-model="commentinfo.id.value"
+              label="编号"
+              hint="评论编号"
+              lazy-rules
+              :readonly="buttonStatus==='修改评论'"
+              :rules="contentRules"
+            />
+            <q-input
+              ref="commentinfo.itemidRef.value"
+              v-model="commentinfo.itemid.value"
+              label="物品Id"
+              hint="输入正确物品id"
+              lazy-rules
+              :rules="contentRules"
+              :readonly="buttonStatus==='修改评论'"
+            />
+            <q-input
+              ref="commentinfo.useridRef.value"
+              v-model="commentinfo.userid.value"
+              label="用户id"
+              hint="输入正确用户id"
+              lazy-rules
+              :rules="contentRules"
+              :readonly="buttonStatus==='修改评论'"
+            />
+            <q-input
+              ref="commentinfo.contentRef.value"
+              v-model="commentinfo.content.value"
+              label="内容"
+              hint="请输入评论内容"
+              lazy-rules
+              :rules="contentRules"
+            />
+            <q-input
+              ref="commentinfo.tocommentidRef.value"
+              v-model="commentinfo.tocommentid.value"
+              label="父级评论id"
+              hint="请输入父级评论id"
+              lazy-rules
+              :readonly="buttonStatus==='修改评论'"
+            />
+            <div>
+              <q-btn v-if="buttonStatus==='新增评论'" label="提交" type="submit" color="primary"/>
+              <q-btn v-if="buttonStatus==='修改评论'" label="提交修改" type="submit" color="primary"/>
+              <q-btn v-if="buttonStatus==='新增评论'" label="重置" type="reset" color="primary" flat class="q-ml-sm"/>
+            </div>
+          </form>
+        </div>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 //表格多选框
 import {ref} from "vue";
-import {api} from "../boot/axios";
+import {api} from "boot/axios";
+import {CommFail, CommSeccess, CommWarn} from "components/common";
+import {Commentinfo} from "components/models";
+import {exportFile, useQuasar} from "quasar";
+
+
+//刷新按钮
+let loading = ref([false,])
+
+function simulateProgress(number: number) {
+  loading.value[number] = true //这是那个加载动画
+  localStorage.removeItem("commentcolumns")
+  loadPage()
+  setTimeout(() => {
+    loading.value[number] = false
+    CommSeccess("刷新成功")
+  }, 500)
+
+}
 
 const selected = ref([])
 
@@ -72,7 +165,6 @@ function loadPage() {
         //@ts-ignore
         comment.align = "center"
       })
-      console.log(columns)
       localStorage.setItem("commentcolumns", JSON.stringify(columns))
       // console.log(localStorage.getItem("commentcolumns"))
       // console.log(JSON.parse(localStorage.getItem("commentcolumns")))
@@ -99,8 +191,181 @@ function loadPage() {
   }, 1000)
 
 }
+
+//新增评论
+const commentinfo = new Commentinfo();
+let windowDisplay = ref(false)
+let buttonStatus: string = '新增评论'
+//规则
+let contentRules = ref([(val: string | any[]) => (val && val.length > 0) || '输入值为空'])
+
+
+//清空
+function onReset() {
+  commentinfo.clearall()
+}
+
+//修改评论
+//修改评论
+function checkCounts() {
+  buttonStatus = '修改评论'
+  if (selected.value.length != 1) {
+    CommWarn("请选择一个数据进行修改")
+  } else {//@ts-ignore
+    commentinfo.id.value = selected.value[0].id//@ts-ignore
+    commentinfo.itemid.value = selected.value[0].itemid//@ts-ignore
+    commentinfo.userid.value = selected.value[0].userid//@ts-ignore
+    commentinfo.content.value = selected.value[0].content//@ts-ignore
+    commentinfo.tocommentid.value = selected.value[0].tocommentid//@ts-ignore
+    windowDisplay.value = true
+  }
+}
+
+//提交新增或修改
+function onSubmit() {
+  if (buttonStatus === '新增评论') {
+    if (commentinfo.itemid.value != '' && commentinfo.userid.value != '' && commentinfo.content.value != '') {
+      api.post("/comment/", {
+        "id": commentinfo.id.value,
+        "userid": commentinfo.userid.value,
+        "itemid": commentinfo.itemid.value,
+        "content": commentinfo.content.value,
+        "tocommentid": commentinfo.tocommentid.value
+      }).then(res => {
+        if (res.status === 200) {
+          CommSeccess("提交成功")
+        } else {
+          CommFail("提交失败")
+        }
+        windowDisplay.value = false
+        loadPage()
+      })
+    } else {
+      CommFail("请检查输入格式是否正确")
+    }
+  }
+  if (buttonStatus === '修改评论') {
+    if (commentinfo.id.value != '' && commentinfo.itemid.value != '' && commentinfo.userid.value != '' && commentinfo.content.value != '') {
+      api.put("/comment/", {
+        "id": commentinfo.id.value,
+        "userid": commentinfo.userid.value,
+        "itemid": commentinfo.itemid.value,
+        "content": commentinfo.content.value,
+        "tocommentid": commentinfo.tocommentid.value
+      }).then(res => {
+        if (res.status === 200) {
+          CommSeccess("提交成功")
+        } else {
+          CommFail("提交失败")
+        }
+        windowDisplay.value = false
+        loadPage()
+      })
+    } else {
+      CommFail("请检查输入格式是否正确")
+    }
+  }
+
+}
+
+//删除
+const $q = useQuasar()
+
+function showNotif() {
+  $q.notify({
+    message: '确定要删除所选项目吗？',
+    type: 'negative',
+    position: 'top',
+    actions: [
+      {
+        label: '确定', color: 'yellow', handler: () => {
+          const idlist: any = ref([])
+          selected.value.forEach((item: any, index) => {
+            idlist.value.push(item.id)
+          })
+          console.log(JSON.stringify(idlist.value))
+          // 删除用户
+          deleteItems_ById(idlist)
+          // 刷新页面
+          setTimeout(() => {
+            loadPage()
+          }, 500)
+        }
+      },
+      {
+        label: '取消', color: 'white', handler: () => { /* ... */
+        }
+      }
+    ]
+  })
+}
+
+// 根据id删除多个用户
+function deleteItems_ById(idlist: any) {
+  idlist.value.forEach((item: string) => {
+    // 先用枚举删除将就一下
+    deleteItemById(item)
+  })
+}
+
+// 根据id删除单个用户
+function deleteItemById(id: string) {
+  api.delete("comment/" + id).then(res => {
+    if (res.data.code == 200) {
+      CommSeccess('成功删除')
+    } else {
+      CommFail('删除失败')
+    }
+  })
+}
+
+//导出
+//导出数据
+function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | undefined, row: any) {
+  let formatted = formatFn !== void 0
+    ? formatFn(val, row)
+    : val
+
+  formatted = formatted === void 0 || formatted === null
+    ? ''
+    : String(formatted)
+
+  formatted = formatted.split('"').join('""')
+  return `"${formatted}"`
+}
+
+function exportTable() {
+  //@ts-ignore
+  const content = [columns.map(col => wrapCsvValue(col.label))].concat(
+    //@ts-ignore
+    rows.value.map(row => columns.map(col => wrapCsvValue(
+      typeof col.field === 'function'
+        ? col.field(row)
+        : row[col.field === void 0 ? col.name : col.field],
+      col.format,
+      row
+    )).join(','))
+  ).join('\r\n')
+
+  const status = exportFile(
+    'table-export.csv',
+    content,
+    'text/csv'
+  )
+
+
+  if (status !== true) {
+    $q.notify({
+      message: 'Browser denied file download...',
+      color: 'negative',
+      icon: 'warning'
+    })
+  }
+}
 </script>
 
 <style scoped>
-
+.header .q-btn {
+  margin-right: 15px;
+}
 </style>
