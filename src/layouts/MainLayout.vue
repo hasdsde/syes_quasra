@@ -44,7 +44,7 @@
         <!--          后台管理系统-->
         <!--        </q-item-label>-->
         <!--        真正的侧栏-->
-        <Aside/>
+        <Aside :miniState="miniState"/>
 
       </q-list>
     </q-drawer>
