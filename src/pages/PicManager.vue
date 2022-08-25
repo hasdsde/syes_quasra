@@ -1,6 +1,14 @@
 <template>
   <!-- 顶部提示 -->
   <div class="q-pa-md q-gutter-sm">
+    <div class="header">
+      <q-btn class="shadow-1" unelevated color="primary" label="刷新" :loading="loading[0]"
+             @click="simulateProgress(0)" icon="replay"/>
+      <q-btn class="shadow-1" unelevated color="secondary" label="上传"
+             @click="windowDisplay=true;"
+             icon="add_circle_outline"/>
+      <q-btn class="shadow-1" unelevated color="red" label="删除" @click="showNotif" icon="delete_forever"/>
+    </div>
     <!--  表格  -->
     <div class="q-pa-md" style="margin-left:auto">
       <q-table
@@ -16,6 +24,15 @@
         :loading="loadingPage"
         grid
       >
+        <template v-slot:top-right>
+          <q-input label="学号搜索" v-model="searchtext" :dense=true
+                   style="display: inline-block;float: right;margin-right: 20px" debounce="1000">
+            <template v-slot:append>
+              <q-icon name="search" @click="handlesearch()" class="cursor-pointer"/>
+              <q-icon v-if="searchtext !== ''" name="close" @click="handleRest" class="cursor-pointer"/>
+            </template>
+          </q-input>
+        </template>
         <template v-slot:item="props">
           <div
             class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
@@ -36,14 +53,22 @@
                 :label="'用户: '+props.row.userid"
                 :caption="' '+props.row.createtime"
               >
-                <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name">
+                <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')"
+                        :key="col.name">
                   <q-item-section>
                     <!--        获取了全部属性            -->
                     <q-item-label>{{ col.label }}</q-item-label>
                   </q-item-section>
                   <q-item-section side>
                     <!--        显示属性值            -->
-                    <q-item-label caption>{{ col.value }}</q-item-label>
+                    <q-item-label caption v-if="col.label!=='可用状态'">{{ col.value }}
+                    </q-item-label>
+                    <q-item-label caption v-if="col.label==='可用状态'">
+                      <div @click="switchbutton(props.row)" style="text-align: center">
+                        <q-btn v-if="col.value===false" color="primary" label="可用" size="sm"/>
+                        <q-btn v-if="col.value===true" color="red" label="已删除" size="sm"/>
+                      </div>
+                    </q-item-label>
                   </q-item-section>
                 </q-item>
               </q-expansion-item>
@@ -53,7 +78,8 @@
       </q-table>
     </div>
     <!--  分页  -->
-    <div class="q-pa-lg flex flex-center">
+    <div class=" q-pa-lg flex flex-center
+                      ">
       <q-pagination
         v-model="currentPage"
         :max="Pagecount"
@@ -62,14 +88,33 @@
         style="min-width: 2em"
       />
     </div>
+
+    <!--文件上传-->
+    <q-dialog v-model="windowDisplay" position="top">
+      <q-uploader
+        url="http://localhost:8000/file/upload"
+        label="图片上传"
+        multiple
+        batch
+        color="teal"
+        style="max-width: 300px"
+        max-file-size="1048576"
+        max-files="10"
+        auto-upload
+        field-name="file"
+        :form-fields="[{name: 'userid', value: userid.value}]"
+      />
+    </q-dialog>
+
   </div>
 </template>
 
 <script lang="ts" setup>
 //刷新按钮
 import {ref} from "vue";
-import {CommSeccess} from "components/common";
+import {CommFail, CommSeccess} from "components/common";
 import {api} from "boot/axios";
+import {useQuasar} from "quasar";
 
 let loading = ref([false,])
 
@@ -149,11 +194,96 @@ function loadPage() {
 
 //图片整体展开或关闭
 let openall = ref(false)
+//文件上传
+let windowDisplay = ref(false)
+let userid = ref(20201313013)
+
+//切换按钮状态
+function switchbutton(value: { id: string; is_delete: any; }) {
+
+  api.get("/file/status?id=" + value.id + "&status=" + !value.is_delete).then(() => {
+    loadPage()
+    CommSeccess("操作成功")
+  })
+}
+
+//搜索
+let searchtext = ref('');
+
+function handlesearch() {
+  api.get("/file/" + searchtext.value).then(res => {
+    rows.value.splice(0)
+    for (let i: number = 0; i < res.data.data.length; i++) {
+      //@ts-ignore
+      rows.value[i] = res.data.data[i]
+    }
+  })
+}
+
+function handleRest() {
+  searchtext.value = "";
+  console.log("重置了按钮")
+  loadPage()
+}
+
+//删除
+const $q = useQuasar()
+
+function showNotif() {
+  $q.notify({
+    message: '确定要删除所选项目吗？',
+    type: 'negative',
+    position: 'top',
+    actions: [
+      {
+        label: '确定', color: 'yellow', handler: () => {
+          const idlist: any = ref([])
+          selected.value.forEach((item: any, index) => {
+            idlist.value.push(item.id)
+          })
+          console.log(JSON.stringify(idlist.value))
+          // 删除用户
+          deleteItems_ById(idlist)
+          // 刷新页面
+          setTimeout(() => {
+            loadPage()
+          }, 500)
+        }
+      },
+      {
+        label: '取消', color: 'white', handler: () => { /* ... */
+        }
+      }
+    ]
+  })
+}
+
+// 根据id删除多个用户
+function deleteItems_ById(idlist: any) {
+  idlist.value.forEach((item: string) => {
+    // 先用枚举删除将就一下
+    deleteItemById(item)
+  })
+}
+
+// 根据id删除单个用户
+function deleteItemById(id: string) {
+  api.delete("file/" + id).then(res => {
+    if (res.data.code == 200) {
+      CommSeccess('成功删除')
+    } else {
+      CommFail('删除失败')
+    }
+  })
+}
+
 
 </script>
 
 <style scoped>
-
+.header .q-btn {
+  margin-right: 15px;
+}
 </style>
 <style lang="sass">
 .grid-style-transition
