@@ -127,6 +127,7 @@ import {exportFile, useQuasar} from "quasar";
 
 //刷新按钮
 let loading = ref([false,])
+let searchtext = ref('');
 
 function simulateProgress(number: number) {
   loading.value[number] = true //这是那个加载动画
@@ -175,8 +176,6 @@ function loadPage() {
         comment.align = "center"
       })
       localStorage.setItem("commentcolumns", JSON.stringify(columns))
-      // console.log(localStorage.getItem("commentcolumns"))
-      // console.log(JSON.parse(localStorage.getItem("commentcolumns")))
     })
   } else {
     // @ts-ignore 不清楚怎么办到的，能跑就行
@@ -191,7 +190,7 @@ function loadPage() {
     }
   }
 //获取分页数据
-  api.get("/comment/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value).then(res => {
+  api.get("/comment/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
     rows.value = res.data.data.data
     Pagecount.value = Math.ceil(res.data.data.total / PageItem)
   })
@@ -292,7 +291,6 @@ function showNotif() {
           selected.value.forEach((item: any, index) => {
             idlist.value.push(item.id)
           })
-          console.log(JSON.stringify(idlist.value))
           // 删除用户
           deleteItems_ById(idlist)
           // 刷新页面
@@ -373,27 +371,8 @@ function exportTable() {
 }
 
 //搜索
-let searchtext = ref('');
-
 function handlesearch() {
-  if (Number(searchtext.value) > 20191111111) {
-    api.get("/comment/user/" + searchtext.value).then(res => {
-      rows.value.splice(0)
-      for (let i: number = 0; i < res.data.data.length; i++) {
-        //@ts-ignore
-        rows.value[i] = res.data.data[i]
-      }
-    })
-  } else {
-    api.get("/comment/item/" + searchtext.value).then(res => {
-      rows.value.splice(0)
-      for (let i: number = 0; i < res.data.data.length; i++) {
-        //@ts-ignore
-        rows.value[i] = res.data.data[i]
-      }
-    })
-  }
-
+  loadPage()
 }
 
 function handleRest() {

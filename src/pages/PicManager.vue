@@ -95,7 +95,6 @@
         url="http://localhost:8000/file/upload"
         label="图片上传"
         multiple
-        batch
         color="teal"
         style="max-width: 300px"
         max-file-size="1048576"
@@ -117,6 +116,7 @@ import {api} from "boot/axios";
 import {useQuasar} from "quasar";
 
 let loading = ref([false,])
+let searchtext = ref('');
 
 function simulateProgress(number: number) {
   loading.value[number] = true //这是那个加载动画
@@ -138,7 +138,7 @@ function getSelectedString() {
 //分页
 const currentPage = ref(1) //当前页面
 let Pagecount = ref(1)  //页数
-const PageItem = 4   //页面数据数量
+const PageItem = 8   //页面数据数量
 const pagination = ref({rowsPerPage: 10}) //表格显示的最大数量
 function handlePage() {
   loadPage();
@@ -181,9 +181,9 @@ function loadPage() {
     }
   }
 //获取分页数据
-  api.get("/file/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value).then(res => {
+  api.get("/file/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
+
     rows.value = res.data.data.data
-    console.log(rows.value)
     Pagecount.value = Math.ceil(res.data.data.total / PageItem)
   })
   setTimeout(() => {
@@ -208,16 +208,8 @@ function switchbutton(value: { id: string; is_delete: any; }) {
 }
 
 //搜索
-let searchtext = ref('');
-
 function handlesearch() {
-  api.get("/file/" + searchtext.value).then(res => {
-    rows.value.splice(0)
-    for (let i: number = 0; i < res.data.data.length; i++) {
-      //@ts-ignore
-      rows.value[i] = res.data.data[i]
-    }
-  })
+  loadPage()
 }
 
 function handleRest() {
@@ -241,7 +233,7 @@ function showNotif() {
           selected.value.forEach((item: any, index) => {
             idlist.value.push(item.id)
           })
-          console.log(JSON.stringify(idlist.value))
+
           // 删除用户
           deleteItems_ById(idlist)
           // 刷新页面

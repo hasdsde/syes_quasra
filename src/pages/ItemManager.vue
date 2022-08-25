@@ -174,7 +174,7 @@ function handlePage() {
 //获取后端数据
 let columns = ref([])
 let rows = ref([])
-
+let searchtext = ref('');
 let loadingPage = ref(false)
 loadPage()
 
@@ -192,10 +192,7 @@ function loadPage() {
         //@ts-ignore
         item.align = "center"
       })
-      // console.log(columns)
       localStorage.setItem("itemcolumns", JSON.stringify(columns))
-      // console.log(localStorage.getItem("itemcolumns"))
-      // console.log(JSON.parse(localStorage.getItem("itemcolumns")))
     })
   } else {
     // @ts-ignore 不清楚怎么办到的，能跑就行
@@ -210,7 +207,7 @@ function loadPage() {
     }
   }
 //获取分页数据
-  api.get("/item/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value).then(res => {
+  api.get("/item/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
     rows.value = res.data.data.data
     Pagecount.value = Math.ceil(res.data.data.total / PageItem)
   })
@@ -246,7 +243,6 @@ function onReset() {
   iteminfo.clearall()
 }
 
-//修改物品
 //修改物品
 function checkCounts() {
   buttonStatus = '修改物品'
@@ -312,16 +308,8 @@ function onSubmit() {
 }
 
 //搜索
-let searchtext = ref('');
-
 function handlesearch() {
-  api.get("/item/" + searchtext.value).then(res => {
-    rows.value.splice(0)
-    for (let i: number = 0; i < res.data.data.length; i++) {
-      //@ts-ignore
-      rows.value[i] = res.data.data[i]
-    }
-  })
+  loadPage()
 }
 
 function handleRest() {
@@ -345,7 +333,6 @@ function showNotif() {
           selected.value.forEach((item: any, index) => {
             idlist.value.push(item.id)
           })
-          console.log(JSON.stringify(idlist.value))
           // 删除用户
           deleteItems_ById(idlist)
           // 刷新页面

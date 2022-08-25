@@ -150,7 +150,7 @@ import {CommFail, CommSeccess, CommWarn} from "components/common";
 
 //插件初始化
 const $q = useQuasar()
-
+let searchtext = ref('');
 //刷新按钮
 let loading = ref([false,])
 
@@ -214,7 +214,7 @@ function loadPage() {
     }
   }
 //获取分页数据
-  api.get("/user/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value).then(res => {
+  api.get("/user/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
     rows.value = res.data.data.data
     Pagecount.value = Math.ceil(res.data.data.total / PageItem)
   })
@@ -226,21 +226,13 @@ function loadPage() {
 }
 
 //搜索
-let searchtext = ref('');
-
 function handlesearch() {
-  api.get("/user/" + searchtext.value).then(res => {
-    rows.value.splice(0)
-    for (let i: number = 0; i < res.data.data.length; i++) {
-      //@ts-ignore
-      rows.value[i] = res.data.data[i]
-    }
-  })
+  loadPage()
 }
 
 function handleRest() {
   searchtext.value = "";
-  console.log("重置了按钮")
+
   loadPage()
 }
 
@@ -322,10 +314,10 @@ let idRules = ref([
 //新增用户提交
 function onSubmit() {
   if (userinfo.accept.value == true) {
-    console.log('当前操作：' + buttonStatus)
+
     if (userinfo.name.value != '' && userinfo.id.value != '' && userinfo.password.value != '' && userinfo.nickname.value != '' && userinfo.password.value == userinfo.repassword.value && userinfo.phone.value != '') {
       if (buttonStatus === '新增用户') {
-        console.log("执行了新增用户")
+
         api.post("/user/", {
           "realname": userinfo.name.value,
           "password": userinfo.password.value,
@@ -345,7 +337,7 @@ function onSubmit() {
         })
       }
       if (buttonStatus === '修改用户') {
-        console.log("执行了修改用户")
+
         api.put("/user/", {
           "realname": userinfo.name.value,
           "password": userinfo.password.value,

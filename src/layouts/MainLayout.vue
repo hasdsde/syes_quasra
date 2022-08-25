@@ -82,7 +82,6 @@ let positions = ref()
 //面包屑寻找数据
 watch(() => $router.currentRoute.value.path, (newValue, oldValue) => {
   positions.value = findTitle()
-  console.log(positions)
 }, {immediate: true})
 
 function findTitle() {
