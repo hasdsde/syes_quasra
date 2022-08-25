@@ -26,10 +26,16 @@
                 <q-checkbox dense v-model="props.selected" :label="props.row.name"/>
               </q-card-section>
               <q-card-section>
-                {{ props.row.url }}
+                <q-img :src="props.row.url" style="max-height: 230px;max-width: 100%">
+                </q-img>
               </q-card-section>
               <q-separator/>
-              <q-list dense>
+              <q-expansion-item
+                v-model="openall"
+                icon="camera"
+                :label="'用户: '+props.row.userid"
+                :caption="' '+props.row.createtime"
+              >
                 <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name">
                   <q-item-section>
                     <!--        获取了全部属性            -->
@@ -40,7 +46,7 @@
                     <q-item-label caption>{{ col.value }}</q-item-label>
                   </q-item-section>
                 </q-item>
-              </q-list>
+              </q-expansion-item>
             </q-card>
           </div>
         </template>
@@ -87,7 +93,7 @@ function getSelectedString() {
 //分页
 const currentPage = ref(1) //当前页面
 let Pagecount = ref(1)  //页数
-const PageItem = 10   //页面数据数量
+const PageItem = 4   //页面数据数量
 const pagination = ref({rowsPerPage: 10}) //表格显示的最大数量
 function handlePage() {
   loadPage();
@@ -140,6 +146,9 @@ function loadPage() {
   }, 1000)
 
 }
+
+//图片整体展开或关闭
+let openall = ref(false)
 
 </script>
 
