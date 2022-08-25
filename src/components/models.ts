@@ -9,6 +9,30 @@ export interface Meta {
   totalCount: number;
 }
 
+//菜单数据
+export let menu = ref([
+  {
+    icon: 'home', label: '主页', id: 1, isopen: true, children: [
+      {link: 'Dashboard', icon: 'donut_large', desc: '仪表盘', id: 4,},
+      {link: 'CheckInfo', icon: 'notifications_active', desc: '实时监控', id: 5},
+    ]
+  },
+  {
+    icon: 'perm_identity', label: '管理', isopen: false, id: 2, children: [
+      {link: 'UserManager', icon: 'person', desc: '用户管理', id: 6},
+      {link: 'ItemManager', icon: 'shopping_bag', desc: '物品管理', id: 7},
+      {link: 'CommentManager', icon: 'chat', desc: '评论管理', id: 10},
+      {link: 'PicManager', icon: 'image', desc: '图片管理', id: 11},
+    ]
+  },
+  {
+    icon: 'settings', label: '设置', id: 3, isopen: false, children: [
+      {link: 'UserSetting', icon: 'admin_panel_settings', desc: '用户设置', id: 8},
+      {link: 'About', icon: 'info', desc: '关于', id: 9},
+    ]
+  }
+])
+
 export class Iteminfo {
   id = ref()
   idRef = ref()
@@ -137,25 +161,3 @@ export class Userinfo {
   }
 }
 
-//菜单数据
-export let menu = ref([
-  {
-    icon: 'home', label: '主页', id: 1, isopen: true, children: [
-      {link: 'Dashboard', icon: 'donut_large', desc: '仪表盘', id: 4,},
-      {link: 'CheckInfo', icon: 'notifications_active', desc: '实时监控', id: 5},
-    ]
-  },
-  {
-    icon: 'perm_identity', label: '管理', isopen: false, id: 2, children: [
-      {link: 'UserManager', icon: 'people_alt', desc: '用户管理', id: 6},
-      {link: 'ItemManager', icon: 'shopping_bag', desc: '物品管理', id: 7},
-      {link: 'CommentManager', icon: 'chat', desc: '评论管理', id: 10},
-    ]
-  },
-  {
-    icon: 'settings', label: '设置', id: 3, isopen: false, children: [
-      {link: 'UserSetting', icon: 'admin_panel_settings', desc: '用户设置', id: 8},
-      {link: 'About', icon: 'info', desc: '关于', id: 9},
-    ]
-  }
-])

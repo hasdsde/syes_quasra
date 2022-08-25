@@ -77,10 +77,9 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 import {useStore} from "src/store";
 import {useRouter} from "vue-router/dist/vue-router";
-import {watch} from "vue";
 import {menu} from "src/components/models";
 
 // 父级的mini状态

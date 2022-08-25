@@ -26,6 +26,15 @@
         v-model:selected="selected"
         :loading="loadingPage"
       >
+        <template v-slot:top-right>
+          <q-input label="学号或物品ID" v-model="searchtext" :dense=true
+                   style="display: inline-block;float: right;margin-right: 20px" debounce="1000">
+            <template v-slot:append>
+              <q-icon name="search" @click="handlesearch()" class="cursor-pointer"/>
+              <q-icon v-if="searchtext !== ''" name="close" @click="handleRest" class="cursor-pointer"/>
+            </template>
+          </q-input>
+        </template>
         <!--    加载动画    -->
         <q-inner-loading showing color="primary" label="加载..."/>
       </q-table>
@@ -362,6 +371,37 @@ function exportTable() {
     })
   }
 }
+
+//搜索
+let searchtext = ref('');
+
+function handlesearch() {
+  if (Number(searchtext.value) > 20191111111) {
+    api.get("/comment/user/" + searchtext.value).then(res => {
+      rows.value.splice(0)
+      for (let i: number = 0; i < res.data.data.length; i++) {
+        //@ts-ignore
+        rows.value[i] = res.data.data[i]
+      }
+    })
+  } else {
+    api.get("/comment/item/" + searchtext.value).then(res => {
+      rows.value.splice(0)
+      for (let i: number = 0; i < res.data.data.length; i++) {
+        //@ts-ignore
+        rows.value[i] = res.data.data[i]
+      }
+    })
+  }
+
+}
+
+function handleRest() {
+  searchtext.value = "";
+  console.log("重置了按钮")
+  loadPage()
+}
+
 </script>
 
 <style scoped>

@@ -10,13 +10,6 @@
              icon="edit"/>
       <q-btn class="shadow-1" unelevated color="red" label="删除" @click="showNotif" icon="delete_forever"/>
       <q-btn class="shadow-1" unelevated color="brown-5" label="导出" @click="exportTable" icon="file_download"/>
-      <q-input label="搜索" v-model="searchtext" :dense=true
-               style="display: inline-block;float: right;margin-right: 20px" debounce="1000">
-        <template v-slot:append>
-          <q-icon name="search" @click="handlesearch()" class="cursor-pointer"/>
-          <q-icon v-if="searchtext !== ''" name="close" @click="handleRest" class="cursor-pointer"/>
-        </template>
-      </q-input>
     </div>
 
     <!--  表格  -->
@@ -33,6 +26,15 @@
         v-model:selected="selected"
         :loading="loadingPage"
       >
+        <template v-slot:top-right>
+          <q-input label="学号搜索" v-model="searchtext" :dense=true
+                   style="display: inline-block;float: right;margin-right: 20px" debounce="1000">
+            <template v-slot:append>
+              <q-icon name="search" @click="handlesearch()" class="cursor-pointer"/>
+              <q-icon v-if="searchtext !== ''" name="close" @click="handleRest" class="cursor-pointer"/>
+            </template>
+          </q-input>
+        </template>
         <!--    加载动画    -->
 
         <q-inner-loading showing color="primary" label="加载..."/>
@@ -40,7 +42,7 @@
         <!--    自定义表格属性    -->
         <template v-slot:body-cell-enablesale="props">
           <q-td>
-            <div @click="switchbutton(props)">
+            <div @click="switchbutton(props)" style="text-align: center">
               <q-btn v-if="props.value" color="primary" label="上架" size="sm"/>
               <q-btn v-if="!props.value" color="red" label="下架" size="sm"/>
             </div>
