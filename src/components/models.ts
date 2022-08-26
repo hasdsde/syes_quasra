@@ -23,6 +23,7 @@ export let menu = ref([
       {link: 'ItemManager', icon: 'shopping_bag', desc: '物品管理', id: 7},
       {link: 'CommentManager', icon: 'chat', desc: '评论管理', id: 10},
       {link: 'PicManager', icon: 'image', desc: '图片管理', id: 11},
+      {link: 'OrderManager', icon: 'list_alt', desc: '订单管理', id: 12},
     ]
   },
   {

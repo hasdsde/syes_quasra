@@ -12,6 +12,7 @@ const routes: RouteRecordRaw[] = [
       {path: 'ItemManager', component: () => import('pages/ItemManager.vue')},
       {path: 'CommentManager', component: () => import('pages/CommentManager.vue')},
       {path: 'PicManager', component: () => import('pages/PicManager.vue')},
+      {path: 'OrderManager', component: () => import('pages/OrderManager.vue')},
       {path: 'UserSetting', component: () => import('pages/UserSetting.vue')},
       {path: 'About', component: () => import('pages/About.vue')},
     ],
