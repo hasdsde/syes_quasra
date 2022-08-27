@@ -34,6 +34,27 @@ export let menu = ref([
   }
 ])
 
+export class Order {
+  userid = ref()
+  useridRef = ref()
+  itemid = ref()
+  itemidRef = ref()
+
+  SetItem(value: Order) {
+    this.userid = value.userid
+    this.useridRef = value.useridRef
+    this.itemid = value.itemid
+    this.itemidRef = value.itemid
+  }
+
+  clearall() {
+    this.itemid = ref('')
+    this.itemidRef = ref('')
+    this.userid = ref('')
+    this.useridRef = ref('')
+  }
+}
+
 export class Iteminfo {
   id = ref()
   idRef = ref()

@@ -4,10 +4,8 @@
       <q-btn class="shadow-1" unelevated color="primary" label="刷新" :loading="loading[0]"
              @click="simulateProgress(0)" icon="replay"/>
       <q-btn class="shadow-1" unelevated color="secondary" label="新增"
-             @click="windowDisplay=true;buttonStatus='新增订单';onReset()"
+             @click="windowDisplay=true;onReset()"
              icon="add_circle_outline"/>
-      <q-btn class="shadow-1" unelevated color="purple" label="修改" @click="checkCounts();buttonStatus='修改订单'"
-             icon="edit"/>
       <q-btn class="shadow-1" unelevated color="red" label="删除" @click="showNotif" icon="delete_forever"/>
       <q-btn class="shadow-1" unelevated color="brown-5" label="导出" @click="exportTable" icon="file_download"/>
     </div>
@@ -38,16 +36,32 @@
         <!--    加载动画    -->
 
         <q-inner-loading showing color="primary" label="加载..."/>
-
-        <!--    自定义表格属性    -->
-        <template v-slot:body-cell-status="props">
+        <!--        自定义表格属性-->
+        <template v-slot:body-cell-enable="props">
           <q-td>
+            <div @click="switchbutton(props)" style="text-align: center">
+              <q-btn v-if="props.row.enable===1" color="primary" label="可用" size="sm"/>
+              <q-btn v-if="props.row.enable===0" color="red" label="取消" size="sm"/>
+            </div>
+          </q-td>
+        </template>
+        <!--        自定义表格属性-->
+        <template v-slot:body-cell-status="props">
+          <q-td style="text-align: center">
             <q-btn-group>
-              <q-btn @click="props.value = 1;switchbutton(props)" color="primary" label="上架" size="sm"/>
-              <q-btn @click="props.value = 2;switchbutton(props)" color="primary" label="买家下单" size="sm"/>
-              <q-btn @click="props.value = 3;switchbutton(props)" color="primary" label="卖家确认" size="sm"/>
-              <q-btn @click="props.value = 4;switchbutton(props)" color="primary" label="沟通交易" size="sm"/>
-              <q-btn @click="props.value = 5;switchbutton(props)" color="primary" label="交易完成" size="sm"/>
+              <q-btn-toggle
+                v-model="props.row.status"
+                toggle-color="primary"
+                size="sm"
+                @click="switchstatus(props)"
+                :options="[
+                    {label: '下单', value: 1},
+                    {label: '确认', value: 2},
+                    {label: '交易', value: 3},
+                    {label: '完成', value: 4},
+                    // {label: '交易完成', value: 5}
+                  ]"
+              />
             </q-btn-group>
           </q-td>
         </template>
@@ -70,61 +84,30 @@
     <q-dialog v-model="windowDisplay" position="right">
       <q-card class="column full-height" style="width: 400px">
         <q-card-section class="row items-center q-pb-none ">
-          <div class="text-h6">{{ buttonStatus }}</div>
+          <div class="text-h6">新增订单</div>
           <q-space/>
           <q-btn icon="close" flat round dense v-close-popup/>
         </q-card-section>
         <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
           <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset()" class="q-gutter-md">
             <q-input
-              v-if="buttonStatus==='修改物品'"
-              ref="iteminfo.idRef.value"
-              v-model="iteminfo.id.value"
-              label="编号"
-              hint="物品编号"
-              lazy-rules
-              :readonly="buttonStatus==='修改物品'"
-              :rules="contentRules"
-            />
-            <q-input
-              ref="iteminfo.titleRef.value"
-              v-model="iteminfo.title.value"
-              label="标题"
-              hint="输入正确物品标题"
+              ref="order.titleRef.value"
+              v-model="order.itemid.value"
+              label="物品id"
+              hint="输入正确物品id"
               lazy-rules
               :rules="contentRules"
             />
             <q-input
-              ref="iteminfo.descriptionRef.value"
-              v-model="iteminfo.description.value"
-              label="描述"
-              hint="请输入描述"
-              lazy-rules
-              :rules="contentRules"
-            />
-            <q-input
-              ref="iteminfo.priceRef.value"
-              v-model="iteminfo.price.value"
-              label="价格"
-              hint="请输入价格"
-              lazy-rules
-              :rules="priceRules"
-            />
-            <q-input
-              ref="iteminfo.useridRef.value"
-              v-model="iteminfo.userid.value"
+              ref="order.useridRef.value"
+              v-model="order.userid.value"
               label="用户id"
               hint="请输入用户id"
               lazy-rules
               :rules="idRules"
-              :readonly="buttonStatus==='修改物品'"
             />
-            <q-toggle v-model="iteminfo.accept.value" label="同意许可协议"/>
-
             <div>
-              <q-btn v-if="buttonStatus==='新增物品'" label="提交" type="submit" color="primary"/>
-              <q-btn v-if="buttonStatus==='修改物品'" label="提交修改" type="submit" color="primary"/>
-              <q-btn v-if="buttonStatus==='新增物品'" label="重置" type="reset" color="primary" flat class="q-ml-sm"/>
+              <q-btn label="提交" type="submit" color="primary"/>
             </div>
           </form>
         </div>
@@ -137,8 +120,8 @@
 //插件初始化
 import {ref} from "vue";
 import {api} from "boot/axios";
-import {CommFail, CommSeccess, CommWarn} from "components/common";
-import {Iteminfo} from "components/models";
+import {CommFail, CommSeccess} from "components/common";
+import {Order} from "components/models";
 import {exportFile, useQuasar} from "quasar";
 
 
@@ -222,22 +205,25 @@ function loadPage() {
 
 //切换按钮状态
 function switchbutton(value: { row: { id: string; }; value: any; }) {
-  api.get("/order/status?id=" + value.row.id + "&status=" + !value.value).then(() => {
-    console.log("id::"+value.row.id)
-    console.log("status::"+value.value)
+  // console.log(value)
+  api.get("/order/status?id=" + value.row.id + "&status=" + value.value).then(() => {
     loadPage()
     CommSeccess("操作成功")
   })
 }
 
+function switchstatus(props: any) {
+  api.get("/order/status/order?id=" + props.row.id + "&status=" + props.row.status).then(() => {
+    loadPage()
+    CommSeccess("操作成功")
+  })
+
+}
+
 //新增物品
-const iteminfo = new Iteminfo();
+const order = new Order();
 let windowDisplay = ref(false)
-let buttonStatus: string = '新增物品'
 //规则
-let priceRules = ref([
-  (val: number) => (val > 0 && val < 9999) || '价格过高或过低'
-])
 let contentRules = ref([(val: string | any[]) => (val && val.length > 0) || '输入值为空'])
 let idRules = ref([
   (val: number) => (val > 20191111111 && val < 20229999999) || '请输入正确的学号'
@@ -245,70 +231,28 @@ let idRules = ref([
 
 //清空
 function onReset() {
-  iteminfo.clearall()
+  order.clearall()
 }
 
-//修改物品
-function checkCounts() {
-  buttonStatus = '修改物品'
-  if (selected.value.length != 1) {
-    CommWarn("请选择一个数据进行修改")
-  } else {//@ts-ignore
-    iteminfo.id.value = selected.value[0].id//@ts-ignore
-    iteminfo.title.value = selected.value[0].title//@ts-ignore
-    iteminfo.description.value = selected.value[0].description//@ts-ignore
-    iteminfo.userid.value = selected.value[0].userid//@ts-ignore
-    iteminfo.price.value = selected.value[0].price//@ts-ignore
-    windowDisplay.value = true
-  }
-}
 
 //提交新增或修改
 function onSubmit() {
-  if (iteminfo.accept.value == true) {
-    if (buttonStatus === '新增物品') {
-      if (iteminfo.id.value != '' && iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
-        api.post("/item/", {
-          "title": iteminfo.title.value,
-          "description": iteminfo.description.value,
-          "price": iteminfo.price.value,
-          "userid": iteminfo.userid.value
-        }).then(res => {
-          if (res.status === 200) {
-            CommSeccess("提交成功")
-          } else {
-            CommFail("提交失败")
-          }
-          windowDisplay.value = false
-          loadPage()
-        })
-      } else {
-        CommFail("请检查输入格式是否正确")
+  if (order.userid.value != '' && order.itemid.value != '') {
+    api.post("/order/", {
+      "userid": order.userid.value,
+      "itemid": order.itemid.value,
+    }).then(res => {
+      if (res.status === 200) {
+        CommSeccess("提交成功")
       }
-    }
-    if (buttonStatus === '修改物品') {
-      if (iteminfo.id.value != '' && iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
-        api.put("/item/", {
-          "id": iteminfo.id.value,
-          "title": iteminfo.title.value,
-          "description": iteminfo.description.value,
-          "price": iteminfo.price.value,
-          "userid": iteminfo.userid.value
-        }).then(res => {
-          if (res.status === 200) {
-            CommSeccess("提交成功")
-          } else {
-            CommFail("提交失败")
-          }
-          windowDisplay.value = false
-          loadPage()
-        })
-      } else {
-        CommFail("请检查输入格式是否正确")
+      if (res.status !== 200) {
+        CommFail("提交失败")
       }
-    }
+      windowDisplay.value = false
+      loadPage()
+    })
   } else {
-    CommFail('请同意协议')
+    CommFail("请检查输入格式是否正确")
   }
 }
 
@@ -364,7 +308,7 @@ function deleteItems_ById(idlist: any) {
 
 // 根据id删除单个用户
 function deleteItemById(id: string) {
-  api.delete("item/" + id).then(res => {
+  api.delete("/order/" + id).then(res => {
     if (res.data.code == 200) {
       CommSeccess('成功删除')
     } else {
@@ -431,5 +375,10 @@ function exportTable() {
 
 .header .q-btn {
   margin-right: 15px;
+}
+
+.active {
+  color: red;
+  background-color: red;
 }
 </style>
