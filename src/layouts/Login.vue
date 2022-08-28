@@ -33,16 +33,19 @@ let userid = ref('')
 let password = ref('')
 
 function handleLogin() {
+  localStorage.clear()
   api.post("/user/login", {
     "userid": userid.value,
     "password": password.value
   }).then(res => {
-    console.log(res)
-    if (res.data.code === "200") {
-      localStorage.setItem("token", res.data.data)
+    if (res.code === "200") {
+      localStorage.setItem("token", res.data.token)
+      localStorage.setItem("username", res.data.username)
+      localStorage.setItem("useravatar", res.data.avatar)
       CommSeccess('登录成功')
+      window.location.href = '/'
     } else {
-      CommFail(res.data.msg)
+      CommFail(res.msg)
     }
   })
 }

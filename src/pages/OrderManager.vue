@@ -13,16 +13,16 @@
     <!--  表格  -->
     <div class="q-pa-md" style="margin-left:auto">
       <q-table
-        title="订单信息管理"
-        :rows="rows"
-        :columns="columns"
-        row-key="id"
-        hide-pagination
-        :pagination="pagination"
-        :selected-rows-label="getSelectedString"
-        selection="multiple"
-        v-model:selected="selected"
-        :loading="loadingPage"
+          title="订单信息管理"
+          :rows="rows"
+          :columns="columns"
+          row-key="id"
+          hide-pagination
+          :pagination="pagination"
+          :selected-rows-label="getSelectedString"
+          selection="multiple"
+          v-model:selected="selected"
+          :loading="loadingPage"
       >
         <template v-slot:top-right>
           <q-input label="学号搜索" v-model="searchtext" :dense=true
@@ -50,11 +50,11 @@
           <q-td style="text-align: center">
             <q-btn-group>
               <q-btn-toggle
-                v-model="props.row.status"
-                toggle-color="primary"
-                size="sm"
-                @click="switchstatus(props)"
-                :options="[
+                  v-model="props.row.status"
+                  toggle-color="primary"
+                  size="sm"
+                  @click="switchstatus(props)"
+                  :options="[
                     {label: '下单', value: 1},
                     {label: '确认', value: 2},
                     {label: '交易', value: 3},
@@ -70,11 +70,11 @@
     <!--  分页  -->
     <div class="q-pa-lg flex flex-center">
       <q-pagination
-        v-model="currentPage"
-        :max="Pagecount"
-        direction-links
-        @click="handlePage()"
-        style="min-width: 2em"
+          v-model="currentPage"
+          :max="Pagecount"
+          direction-links
+          @click="handlePage()"
+          style="min-width: 2em"
       />
     </div>
 
@@ -91,20 +91,20 @@
         <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
           <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset()" class="q-gutter-md">
             <q-input
-              ref="order.titleRef.value"
-              v-model="order.itemid.value"
-              label="物品id"
-              hint="输入正确物品id"
-              lazy-rules
-              :rules="contentRules"
+                ref="order.titleRef.value"
+                v-model="order.itemid.value"
+                label="物品id"
+                hint="输入正确物品id"
+                lazy-rules
+                :rules="contentRules"
             />
             <q-input
-              ref="order.useridRef.value"
-              v-model="order.userid.value"
-              label="用户id"
-              hint="请输入用户id"
-              lazy-rules
-              :rules="idRules"
+                ref="order.useridRef.value"
+                v-model="order.userid.value"
+                label="用户id"
+                hint="请输入用户id"
+                lazy-rules
+                :rules="idRules"
             />
             <div>
               <q-btn label="提交" type="submit" color="primary"/>
@@ -173,7 +173,7 @@ function loadPage() {
       if (columns == undefined) {
         loadPage()
       }
-      columns.value = res.data.data
+      columns.value = res.data
       columns.value.forEach((item) => {
         //@ts-ignore
         item.align = "center"
@@ -194,8 +194,8 @@ function loadPage() {
   }
 //获取分页数据
   api.get("/order/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
-    rows.value = res.data.data.data
-    Pagecount.value = Math.ceil(res.data.data.total / PageItem)
+    rows.value = res.data.data
+    Pagecount.value = Math.ceil(res.data.total / PageItem)
   })
   setTimeout(() => {
     loadingPage.value = false
@@ -309,7 +309,7 @@ function deleteItems_ById(idlist: any) {
 // 根据id删除单个用户
 function deleteItemById(id: string) {
   api.delete("/order/" + id).then(res => {
-    if (res.data.code == 200) {
+    if (res.code == 200) {
       CommSeccess('成功删除')
     } else {
       CommFail('删除失败')
@@ -321,12 +321,12 @@ function deleteItemById(id: string) {
 //导出数据
 function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | undefined, row: any) {
   let formatted = formatFn !== void 0
-    ? formatFn(val, row)
-    : val
+      ? formatFn(val, row)
+      : val
 
   formatted = formatted === void 0 || formatted === null
-    ? ''
-    : String(formatted)
+      ? ''
+      : String(formatted)
 
   formatted = formatted.split('"').join('""')
   return `"${formatted}"`
@@ -335,20 +335,20 @@ function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | unde
 function exportTable() {
   //@ts-ignore
   const content = [columns.map(col => wrapCsvValue(col.label))].concat(
-    //@ts-ignore
-    rows.value.map(row => columns.map(col => wrapCsvValue(
-      typeof col.field === 'function'
-        ? col.field(row)
-        : row[col.field === void 0 ? col.name : col.field],
-      col.format,
-      row
-    )).join(','))
+      //@ts-ignore
+      rows.value.map(row => columns.map(col => wrapCsvValue(
+          typeof col.field === 'function'
+              ? col.field(row)
+              : row[col.field === void 0 ? col.name : col.field],
+          col.format,
+          row
+      )).join(','))
   ).join('\r\n')
 
   const status = exportFile(
-    'table-export.csv',
-    content,
-    'text/csv'
+      'table-export.csv',
+      content,
+      'text/csv'
   )
 
 

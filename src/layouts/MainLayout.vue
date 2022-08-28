@@ -24,7 +24,9 @@
           </q-breadcrumbs>
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>{{ UserNow }}
+          <q-btn round color="deep-orange" icon="logout" size="sm" @click="logout"/>
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -76,6 +78,10 @@ function toggleLeftDrawer() {
 
 let miniState = ref(true)
 
+const UserNow = ref(localStorage.getItem('username'))
+const Useravatar = ref(localStorage.getItem('avatar'))
+
+
 //面包屑
 let menus = ref(menu)
 let positions = ref()
@@ -97,5 +103,10 @@ function findTitle() {
   }
 }
 
-
+function logout() {
+  $router.push("/login")
+  localStorage.removeItem('token')
+  localStorage.removeItem('username')
+  localStorage.removeItem('avatar')
+}
 </script>

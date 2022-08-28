@@ -159,7 +159,7 @@ function loadPage() {
       if (columns == undefined) {
         loadPage()
       }
-      columns.value = res.data.data
+      columns.value = res.data
       columns.value.forEach((pic) => {
         //@ts-ignore
         pic.align = "center"
@@ -183,8 +183,8 @@ function loadPage() {
 //获取分页数据
   api.get("/file/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
 
-    rows.value = res.data.data.data
-    Pagecount.value = Math.ceil(res.data.data.total / PageItem)
+    rows.value = res.data.data
+    Pagecount.value = Math.ceil(res.data.total / PageItem)
   })
   setTimeout(() => {
     loadingPage.value = false
@@ -261,7 +261,7 @@ function deleteItems_ById(idlist: any) {
 // 根据id删除单个用户
 function deleteItemById(id: string) {
   api.delete("file/" + id).then(res => {
-    if (res.data.code == 200) {
+    if (res.code == 200) {
       CommSeccess('成功删除')
     } else {
       CommFail('删除失败')

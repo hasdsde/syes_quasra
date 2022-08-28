@@ -1,14 +1,22 @@
 import {boot} from 'quasar/wrappers';
 import axios, {AxiosInstance} from 'axios';
-import {useRouter} from "vue-router/dist/vue-router";
+import {CommFail} from "components/common";
 
-const $router = useRouter()
+
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
     $axios: AxiosInstance;
   }
 }
 
+declare module "axios" {
+  interface AxiosResponse<T = any> {
+    code: any;
+    msg: any;
+    data: T;
+    // 这里追加你的参数
+  }
+}
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
 // If any client changes this (global) instance, it might be a
@@ -30,9 +38,9 @@ export default boot(({app}) => {
 
   //请求拦截器
   api.interceptors.request.use(
-    config => {
+    (config) => {
       if (localStorage.getItem("token") == null) {
-        $router.push('/login')
+        window.location.href = "/#/login"
       } else {
         config.headers.token = localStorage.getItem('token');
       }
@@ -45,10 +53,19 @@ export default boot(({app}) => {
   //相应拦截器
   api.interceptors.response.use(
     res => {
-      return res.data
+      if (res.data.code === '200') {
+        return res.data
+      } else {
+        CommFail(res.data.msg)
+      }
+      if (res.data.code === '499') {
+        CommFail('请重新登录')
+        window.location.href = "/#/login"
+      }
     }
   )
 
 });
+
 
 export {api};

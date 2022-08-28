@@ -195,7 +195,7 @@ function loadPage() {
       if (columns == undefined) {
         loadPage()
       }
-      columns.value = res.data.data
+      columns.value = res.data
       columns.value.forEach((item: any) => {
         item.align = "center"
       })
@@ -215,8 +215,8 @@ function loadPage() {
   }
 //获取分页数据
   api.get("/user/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
-    rows.value = res.data.data.data
-    Pagecount.value = Math.ceil(res.data.data.total / PageItem)
+    rows.value = res.data.data
+    Pagecount.value = Math.ceil(res.data.total / PageItem)
   })
 
   setTimeout(() => {
@@ -249,7 +249,7 @@ function showNotif() {
           selected.value.forEach((item: any, index) => {
             idlist.value.push(item.id)
           })
-          console.log(JSON.stringify(idlist.value))
+          // console.log(JSON.stringify(idlist.value))
           // api.post("/user/dlist?ids=" + JSON.stringify(idlist.value)).then(res => {
           //   console.log(res)
           //   loadPage()
@@ -283,7 +283,7 @@ function deleteUsers_ById(idlist: any) {
 // 根据id删除单个用户
 function deleteUserById(id: string) {
   api.delete("user/" + id).then(res => {
-    if (res.data.code == 200) {
+    if (res.code == 200) {
       CommSeccess('成功删除')
     } else {
       CommFail('删除失败')
