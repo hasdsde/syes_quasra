@@ -1,6 +1,8 @@
 import {boot} from 'quasar/wrappers';
 import axios, {AxiosInstance} from 'axios';
+import {useRouter} from "vue-router/dist/vue-router";
 
+const $router = useRouter()
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
     $axios: AxiosInstance;
@@ -26,6 +28,26 @@ export default boot(({app}) => {
   // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
   //       so you can easily perform requests against your app's API
 
+  //请求拦截器
+  api.interceptors.request.use(
+    config => {
+      if (localStorage.getItem("token") == null) {
+        $router.push('/login')
+      } else {
+        config.headers.token = localStorage.getItem('token');
+      }
+      return config
+    },
+    err => {
+      return Promise.reject(err)
+    }
+  )
+  //相应拦截器
+  api.interceptors.response.use(
+    res => {
+      return res.data
+    }
+  )
 
 });
 
