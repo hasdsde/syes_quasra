@@ -34,8 +34,8 @@ let password = ref('')
 
 function handleLogin() {
   localStorage.clear()
-  api.post("/user/login", {
-    "userid": userid.value,
+  api.post("/rootuser/login", {
+    "id": userid.value,
     "password": password.value
   }).then(res => {
     if (res.code === "200") {
