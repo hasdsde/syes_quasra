@@ -262,14 +262,14 @@ function checkCounts() {
 function onSubmit() {
   if (iteminfo.accept.value == true) {
     if (buttonStatus === '新增物品') {
-      if (iteminfo.id.value != '' && iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
+      if ( iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
         api.post("/item/", {
           "title": iteminfo.title.value,
           "description": iteminfo.description.value,
           "price": iteminfo.price.value,
           "userid": iteminfo.userid.value
         }).then(res => {
-          if (res.status === 200) {
+          if (res.code === "200") {
             CommSeccess("提交成功")
           } else {
             CommFail("提交失败")

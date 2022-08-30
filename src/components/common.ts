@@ -1,4 +1,4 @@
-import {Notify} from 'quasar'
+import { Notify } from 'quasar'
 
 //一般类型操作成功
 export function CommSeccess(message: any) {
