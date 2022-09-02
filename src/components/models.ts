@@ -56,6 +56,27 @@ export class Order {
     }
 }
 
+export class Sort {
+    id = ref()
+    name = ref()
+    icon = ref()
+    pid = ref()
+
+    SetItem(value: Sort) {
+        this.id = value.id
+        this.name = value.name
+        this.icon = value.icon
+        this.pid = value.pid
+    }
+
+    clearall() {
+        this.id = ref('')
+        this.name = ref('')
+        this.icon = ref('')
+        this.pid = ref('')
+    }
+}
+
 export class Iteminfo {
     id = ref()
     idRef = ref()
