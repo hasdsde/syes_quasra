@@ -30,6 +30,7 @@ export let menu = ref([
     {
         icon: 'settings', label: '设置', id: 3, isopen: false, children: [
             {link: 'UserSetting', icon: 'admin_panel_settings', desc: '用户设置', id: 8},
+            {link: 'HomeSetting', icon: 'phonelink_setup', desc: '首页设置', id: 14},
             {link: 'About', icon: 'info', desc: '关于', id: 9},
         ]
     }
