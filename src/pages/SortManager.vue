@@ -4,7 +4,7 @@
       <q-btn class="shadow-1" unelevated color="primary" label="刷新" :loading="loading[0]"
              @click="simulateProgress(0)" icon="replay"/>
       <q-btn class="shadow-1" unelevated color="primary" label="清空筛选" :loading="loading[0]"
-             @click="loadPage2();handleCheck('')" icon="replay"/>
+             @click="loadPage();loadPage2();" icon="replay"/>
       <q-btn class="shadow-1" unelevated color="secondary" label="新增"
              @click="windowDisplay=true;onReset();buttonStatus='新增'"
              icon="add_circle_outline"/>
@@ -111,9 +111,11 @@ function simulateProgress(number: number) {
   loading.value[number] = true //这是那个加载动画
   localStorage.removeItem("psortcolumns")
   localStorage.removeItem("nsortcolumns")
-  loadPage()
+  loadPage();
+  loadPage2();
   setTimeout(() => {
     loading.value[number] = false
+
     // CommSeccess("刷新成功")
   }, 500)
 
@@ -140,6 +142,7 @@ function onSubmit() {
       }
       windowDisplay.value = false
       loadPage()
+      loadPage2()
     })
   }
   if (buttonStatus.value === '修改') {
@@ -157,6 +160,7 @@ function onSubmit() {
       }
       windowDisplay.value = false
       loadPage()
+      loadPage2()
     })
   }
 }
@@ -278,6 +282,7 @@ function showNotif() {
           // 刷新页面
           setTimeout(() => {
             loadPage()
+            loadPage2()
           }, 500)
         }
       },
@@ -306,6 +311,8 @@ function deleteItemById(id: string) {
       CommFail('删除失败')
     }
   })
+  loadPage()
+  loadPage2()
 }
 </script>
 
