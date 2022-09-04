@@ -23,7 +23,6 @@
             :loading="loadingPage"
         />
         <!--    轮播图    -->
-
       </div>
       <div class="col q-pa-md">
         <div class="q-pa-md" style="padding:0">
@@ -41,10 +40,7 @@
               @mouseleave="autoplay = true"
               height="200px"
           >
-            <q-carousel-slide :name="1" img-src="https://img.hasdsd.cn/img/quasar.jpg"/>
-            <q-carousel-slide :name="2" img-src="https://img.hasdsd.cn/img/parallax2.jpg"/>
-            <q-carousel-slide :name="3" img-src="https://img.hasdsd.cn/img/mountains.jpg"/>
-            <q-carousel-slide :name="4" img-src="https://img.hasdsd.cn/img/parallax1.jpg"/>
+            <q-carousel-slide v-for="item in rows" :key="item.id" :name="item.id" :img-src="item.url"/>
           </q-carousel>
         </div>
       </div>
@@ -84,7 +80,6 @@ const uploadUrl = ref()
 function ImgInfo(info: any) {
   uploadUrl.value = JSON.parse(info.xhr.response).data.url
   api.get("/rollimg/url?url=" + uploadUrl.value).then(res => {
-    console.log(res)
     CommSeccess("上传成功")
     loadPage()
   })

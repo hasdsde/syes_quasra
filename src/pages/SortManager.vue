@@ -4,7 +4,7 @@
       <q-btn class="shadow-1" unelevated color="primary" label="刷新" :loading="loading[0]"
              @click="simulateProgress(0)" icon="replay"/>
       <q-btn class="shadow-1" unelevated color="primary" label="清空筛选" :loading="loading[0]"
-             @click="loadPage2();checkid=''" icon="replay"/>
+             @click="loadPage2();handleCheck('')" icon="replay"/>
       <q-btn class="shadow-1" unelevated color="secondary" label="新增"
              @click="windowDisplay=true;onReset();buttonStatus='新增'"
              icon="add_circle_outline"/>
