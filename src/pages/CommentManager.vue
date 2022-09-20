@@ -15,16 +15,16 @@
     <!--  表格  -->
     <div class="q-pa-md" style="margin-left:auto">
       <q-table
-        title="用户评论管理"
-        :rows="rows"
-        :columns="columns"
-        row-key="id"
-        hide-pagination
-        :pagination="pagination"
-        :selected-rows-label="getSelectedString"
-        selection="multiple"
-        v-model:selected="selected"
-        :loading="loadingPage"
+          title="用户评论管理"
+          :rows="rows"
+          :columns="columns"
+          row-key="id"
+          hide-pagination
+          :pagination="pagination"
+          :selected-rows-label="getSelectedString"
+          selection="multiple"
+          v-model:selected="selected"
+          :loading="loadingPage"
       >
         <template v-slot:top-right>
           <q-input label="学号或物品ID" v-model="searchtext" :dense=true
@@ -42,11 +42,11 @@
     <!--  分页  -->
     <div class="q-pa-lg flex flex-center">
       <q-pagination
-        v-model="currentPage"
-        :max="Pagecount"
-        direction-links
-        @click="handlePage()"
-        style="min-width: 2em"
+          v-model="currentPage"
+          :max="Pagecount"
+          direction-links
+          @click="handlePage()"
+          style="min-width: 2em"
       />
     </div>
     <!--  新增，修改  -->
@@ -61,48 +61,48 @@
         <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
           <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset()" class="q-gutter-md">
             <q-input
-              v-if="buttonStatus==='修改评论'"
-              ref="commentinfo.idRef.value"
-              v-model="commentinfo.id.value"
-              label="编号"
-              hint="评论编号"
-              lazy-rules
-              :readonly="buttonStatus==='修改评论'"
-              :rules="contentRules"
+                v-if="buttonStatus==='修改评论'"
+                ref="commentinfo.idRef.value"
+                v-model="commentinfo.id.value"
+                label="编号"
+                hint="评论编号"
+                lazy-rules
+                :readonly="buttonStatus==='修改评论'"
+                :rules="contentRules"
             />
             <q-input
-              ref="commentinfo.itemidRef.value"
-              v-model="commentinfo.itemid.value"
-              label="物品Id"
-              hint="输入正确物品id"
-              lazy-rules
-              :rules="contentRules"
-              :readonly="buttonStatus==='修改评论'"
+                ref="commentinfo.itemidRef.value"
+                v-model="commentinfo.itemid.value"
+                label="物品Id"
+                hint="输入正确物品id"
+                lazy-rules
+                :rules="contentRules"
+                :readonly="buttonStatus==='修改评论'"
             />
             <q-input
-              ref="commentinfo.useridRef.value"
-              v-model="commentinfo.userid.value"
-              label="用户id"
-              hint="输入正确用户id"
-              lazy-rules
-              :rules="contentRules"
-              :readonly="buttonStatus==='修改评论'"
+                ref="commentinfo.useridRef.value"
+                v-model="commentinfo.userid.value"
+                label="用户id"
+                hint="输入正确用户id"
+                lazy-rules
+                :rules="contentRules"
+                :readonly="buttonStatus==='修改评论'"
             />
             <q-input
-              ref="commentinfo.contentRef.value"
-              v-model="commentinfo.content.value"
-              label="内容"
-              hint="请输入评论内容"
-              lazy-rules
-              :rules="contentRules"
+                ref="commentinfo.contentRef.value"
+                v-model="commentinfo.content.value"
+                label="内容"
+                hint="请输入评论内容"
+                lazy-rules
+                :rules="contentRules"
             />
             <q-input
-              ref="commentinfo.tocommentidRef.value"
-              v-model="commentinfo.tocommentid.value"
-              label="父级评论id"
-              hint="请输入父级评论id"
-              lazy-rules
-              :readonly="buttonStatus==='修改评论'"
+                ref="commentinfo.tocommentidRef.value"
+                v-model="commentinfo.fromcommentid.value"
+                label="父级评论id"
+                hint="请输入父级评论id"
+                lazy-rules
+                :readonly="buttonStatus==='修改评论'"
             />
             <div>
               <q-btn v-if="buttonStatus==='新增评论'" label="提交" type="submit" color="primary"/>
@@ -224,7 +224,7 @@ function checkCounts() {
     commentinfo.itemid.value = selected.value[0].itemid//@ts-ignore
     commentinfo.userid.value = selected.value[0].userid//@ts-ignore
     commentinfo.content.value = selected.value[0].content//@ts-ignore
-    commentinfo.tocommentid.value = selected.value[0].tocommentid//@ts-ignore
+    commentinfo.fromcommentid.value = selected.value[0].fromcommentid//@ts-ignore
     windowDisplay.value = true
   }
 }
@@ -238,12 +238,10 @@ function onSubmit() {
         "userid": commentinfo.userid.value,
         "itemid": commentinfo.itemid.value,
         "content": commentinfo.content.value,
-        "tocommentid": commentinfo.tocommentid.value
+        "fromcommentid": commentinfo.fromcommentid.value
       }).then(res => {
         if (res.status === 200) {
           CommSeccess("提交成功")
-        } else {
-          CommFail("提交失败")
         }
         windowDisplay.value = false
         loadPage()
@@ -259,12 +257,10 @@ function onSubmit() {
         "userid": commentinfo.userid.value,
         "itemid": commentinfo.itemid.value,
         "content": commentinfo.content.value,
-        "tocommentid": commentinfo.tocommentid.value
+        "fromcommentid": commentinfo.fromcommentid.value
       }).then(res => {
         if (res.status === 200) {
           CommSeccess("提交成功")
-        } else {
-          CommFail("提交失败")
         }
         windowDisplay.value = false
         loadPage()
@@ -318,10 +314,8 @@ function deleteItems_ById(idlist: any) {
 // 根据id删除单个用户
 function deleteItemById(id: string) {
   api.delete("comment/" + id).then(res => {
-    if (res.code == 200) {
+    if (res.code == "200") {
       CommSeccess('成功删除')
-    } else {
-      CommFail('删除失败')
     }
   })
 }
@@ -330,12 +324,12 @@ function deleteItemById(id: string) {
 //导出数据
 function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | undefined, row: any) {
   let formatted = formatFn !== void 0
-    ? formatFn(val, row)
-    : val
+      ? formatFn(val, row)
+      : val
 
   formatted = formatted === void 0 || formatted === null
-    ? ''
-    : String(formatted)
+      ? ''
+      : String(formatted)
 
   formatted = formatted.split('"').join('""')
   return `"${formatted}"`
@@ -344,20 +338,20 @@ function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | unde
 function exportTable() {
   //@ts-ignore
   const content = [columns.map(col => wrapCsvValue(col.label))].concat(
-    //@ts-ignore
-    rows.value.map(row => columns.map(col => wrapCsvValue(
-      typeof col.field === 'function'
-        ? col.field(row)
-        : row[col.field === void 0 ? col.name : col.field],
-      col.format,
-      row
-    )).join(','))
+      //@ts-ignore
+      rows.value.map(row => columns.map(col => wrapCsvValue(
+          typeof col.field === 'function'
+              ? col.field(row)
+              : row[col.field === void 0 ? col.name : col.field],
+          col.format,
+          row
+      )).join(','))
   ).join('\r\n')
 
   const status = exportFile(
-    'table-export.csv',
-    content,
-    'text/csv'
+      'table-export.csv',
+      content,
+      'text/csv'
   )
 
 

@@ -89,7 +89,7 @@
 
 import {api} from "boot/axios";
 import {ref} from "vue";
-import {CommFail, CommSeccess, CommWarn} from "components/common";
+import {CommSeccess, CommWarn} from "components/common";
 import {Sort} from "components/models";
 import {useQuasar} from "quasar";
 
@@ -137,9 +137,7 @@ function onSubmit() {
       if (res.code === "200") {
         CommSeccess("提交成功")
       }
-      if (res.code !== "200") {
-        CommFail("提交失败")
-      }
+
       windowDisplay.value = false
       loadPage()
       loadPage2()
@@ -155,9 +153,7 @@ function onSubmit() {
       if (res.code === "200") {
         CommSeccess("操作成功")
       }
-      if (res.code !== "200") {
-        CommFail("操作失败")
-      }
+
       windowDisplay.value = false
       loadPage()
       loadPage2()
@@ -305,10 +301,8 @@ function deleteItems_ById(idlist: any) {
 // 根据id删除单个用户
 function deleteItemById(id: string) {
   api.delete("sort/" + id).then(res => {
-    if (res.code == 200) {
+    if (res.code == "200") {
       CommSeccess('成功删除')
-    } else {
-      CommFail('删除失败')
     }
   })
   loadPage()

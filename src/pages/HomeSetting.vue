@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {api} from "boot/axios";
-import {CommFail, CommSeccess} from "components/common";
+import {CommSeccess} from "components/common";
 import {useQuasar} from "quasar";
 
 const slide = ref(1)
@@ -194,10 +194,8 @@ function deleteItems_ById(idlist: any) {
 // 根据id删除单个用户
 function deleteItemById(id: string) {
   api.delete("/rollimg/" + id).then(res => {
-    if (res.code == 200) {
+    if (res.code == "200") {
       CommSeccess('成功删除')
-    } else {
-      CommFail('删除失败')
     }
   })
 }

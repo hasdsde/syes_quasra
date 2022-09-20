@@ -55,10 +55,9 @@
                   size="sm"
                   @click="switchstatus(props)"
                   :options="[
-                    {label: '下单', value: 1},
-                    {label: '确认', value: 2},
-                    {label: '交易', value: 3},
-                    {label: '完成', value: 4},
+                    {label: '确认', value: 1},
+                    {label: '交易', value: 2},
+                    {label: '完成', value: 3},
                     // {label: '交易完成', value: 5}
                   ]"
               />
@@ -245,9 +244,6 @@ function onSubmit() {
       if (res.status === 200) {
         CommSeccess("提交成功")
       }
-      if (res.status !== 200) {
-        CommFail("提交失败")
-      }
       windowDisplay.value = false
       loadPage()
     })
@@ -309,10 +305,8 @@ function deleteItems_ById(idlist: any) {
 // 根据id删除单个用户
 function deleteItemById(id: string) {
   api.delete("/order/" + id).then(res => {
-    if (res.code == 200) {
+    if (res.code == "200") {
       CommSeccess('成功删除')
-    } else {
-      CommFail('删除失败')
     }
   })
 }

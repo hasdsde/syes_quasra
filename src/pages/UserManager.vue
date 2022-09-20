@@ -16,16 +16,16 @@
     <!--  表格  -->
     <div class="q-pa-md" style="margin-left:auto">
       <q-table
-        title="用户信息管理"
-        :rows="rows"
-        :columns="columns"
-        row-key="id"
-        hide-pagination
-        :pagination="pagination"
-        :selected-rows-label="getSelectedString"
-        selection="multiple"
-        v-model:selected="selected"
-        :loading="loadingPage"
+          title="用户信息管理"
+          :rows="rows"
+          :columns="columns"
+          row-key="id"
+          hide-pagination
+          :pagination="pagination"
+          :selected-rows-label="getSelectedString"
+          selection="multiple"
+          v-model:selected="selected"
+          :loading="loadingPage"
       >
         <template v-slot:top-right>
           <!--搜索框-->
@@ -51,11 +51,11 @@
     <!--  分页  -->
     <div class="q-pa-lg flex flex-center">
       <q-pagination
-        v-model="currentPage"
-        :max="Pagecount"
-        direction-links
-        @click="handlePage()"
-        style="min-width: 2em"
+          v-model="currentPage"
+          :max="Pagecount"
+          direction-links
+          @click="handlePage()"
+          style="min-width: 2em"
       />
     </div>
     <!--新增弹出框-->
@@ -69,62 +69,62 @@
         <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
           <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset" class="q-gutter-md">
             <q-input
-              ref="userinfo.idRef.value"
-              v-model="userinfo.id.value"
-              label="学号"
-              hint="学生学号"
-              lazy-rules
-              :rules="idRules"
-              :readonly="buttonStatus==='修改用户'"
+                ref="userinfo.idRef.value"
+                v-model="userinfo.id.value"
+                label="学号"
+                hint="学生学号"
+                lazy-rules
+                :rules="idRules"
+                :readonly="buttonStatus==='修改用户'"
             />
             <q-input
-              ref="userinfo.nameRef.value"
-              v-model="userinfo.name.value"
-              label="姓名"
-              hint="输入真实姓名"
-              lazy-rules
-              :rules="nameRules"
+                ref="userinfo.nameRef.value"
+                v-model="userinfo.name.value"
+                label="姓名"
+                hint="输入真实姓名"
+                lazy-rules
+                :rules="nameRules"
             />
             <q-input
-              ref="userinfo.passwordRef.value"
-              v-model="userinfo.password.value"
-              label="密码"
-              hint="请输入密码"
-              lazy-rules
-              :rules="nameRules"
-              :type="userinfo.isPwd.value ? 'password' : 'text'"
+                ref="userinfo.passwordRef.value"
+                v-model="userinfo.password.value"
+                label="密码"
+                hint="请输入密码"
+                lazy-rules
+                :rules="nameRules"
+                :type="userinfo.isPwd.value ? 'password' : 'text'"
             >
               <template v-slot:append>
                 <q-icon
-                  :name="userinfo.isPwd.value ? 'visibility_off' : 'visibility'"
-                  class="cursor-pointer"
-                  @click="userinfo.isPwd.value = !userinfo.isPwd.value"
+                    :name="userinfo.isPwd.value ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="userinfo.isPwd.value = !userinfo.isPwd.value"
                 />
               </template>
             </q-input>
             <q-input
-              ref="userinfo.passwordRef.value"
-              v-model="userinfo.repassword.value"
-              label="确认密码"
-              hint="请确认输入密码"
-              lazy-rules
-              :rules="passwordRules"
-              type="password"
+                ref="userinfo.passwordRef.value"
+                v-model="userinfo.repassword.value"
+                label="确认密码"
+                hint="请确认输入密码"
+                lazy-rules
+                :rules="passwordRules"
+                type="password"
             />
             <q-input
-              ref="userinfo.nickname.value"
-              v-model="userinfo.nickname.value"
-              label="昵称"
-              hint="输入昵称，创建后可更改"
-              lazy-rules
-              :rules="nameRules"
+                ref="userinfo.nickname.value"
+                v-model="userinfo.nickname.value"
+                label="昵称"
+                hint="输入昵称，创建后可更改"
+                lazy-rules
+                :rules="nameRules"
             />
             <q-input
-              ref="userinfo.phoneRef.value"
-              v-model="userinfo.phone.value"
-              label="手机号"
-              hint="请输入正确格式手机号"
-              lazy-rules
+                ref="userinfo.phoneRef.value"
+                v-model="userinfo.phone.value"
+                label="手机号"
+                hint="请输入正确格式手机号"
+                lazy-rules
             />
 
             <q-toggle v-model="userinfo.accept.value" label="同意许可协议"/>
@@ -283,10 +283,8 @@ function deleteUsers_ById(idlist: any) {
 // 根据id删除单个用户
 function deleteUserById(id: string) {
   api.delete("user/" + id).then(res => {
-    if (res.code == 200) {
+    if (res.code == "200") {
       CommSeccess('成功删除')
-    } else {
-      CommFail('删除失败')
     }
   })
 }
@@ -386,12 +384,12 @@ function checkCounts() {
 //导出数据
 function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | undefined, row: any) {
   let formatted = formatFn !== void 0
-    ? formatFn(val, row)
-    : val
+      ? formatFn(val, row)
+      : val
 
   formatted = formatted === void 0 || formatted === null
-    ? ''
-    : String(formatted)
+      ? ''
+      : String(formatted)
 
   formatted = formatted.split('"').join('""')
   return `"${formatted}"`
@@ -400,20 +398,20 @@ function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | unde
 function exportTable() {
   //@ts-ignore
   const content = [columns.map(col => wrapCsvValue(col.label))].concat(
-    //@ts-ignore
-    rows.value.map(row => columns.map(col => wrapCsvValue(
-      typeof col.field === 'function'
-        ? col.field(row)
-        : row[col.field === void 0 ? col.name : col.field],
-      col.format,
-      row
-    )).join(','))
+      //@ts-ignore
+      rows.value.map(row => columns.map(col => wrapCsvValue(
+          typeof col.field === 'function'
+              ? col.field(row)
+              : row[col.field === void 0 ? col.name : col.field],
+          col.format,
+          row
+      )).join(','))
   ).join('\r\n')
 
   const status = exportFile(
-    'table-export.csv',
-    content,
-    'text/csv'
+      'table-export.csv',
+      content,
+      'text/csv'
   )
 
 

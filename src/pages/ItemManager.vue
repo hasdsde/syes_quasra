@@ -15,16 +15,16 @@
     <!--  表格  -->
     <div class="q-pa-md" style="margin-left:auto">
       <q-table
-        title="物品信息管理"
-        :rows="rows"
-        :columns="columns"
-        row-key="id"
-        hide-pagination
-        :pagination="pagination"
-        :selected-rows-label="getSelectedString"
-        selection="multiple"
-        v-model:selected="selected"
-        :loading="loadingPage"
+          title="物品信息管理"
+          :rows="rows"
+          :columns="columns"
+          row-key="id"
+          hide-pagination
+          :pagination="pagination"
+          :selected-rows-label="getSelectedString"
+          selection="multiple"
+          v-model:selected="selected"
+          :loading="loadingPage"
       >
         <template v-slot:top-right>
           <q-input label="学号搜索" v-model="searchtext" :dense=true
@@ -53,11 +53,11 @@
     <!--  分页  -->
     <div class="q-pa-lg flex flex-center">
       <q-pagination
-        v-model="currentPage"
-        :max="Pagecount"
-        direction-links
-        @click="handlePage()"
-        style="min-width: 2em"
+          v-model="currentPage"
+          :max="Pagecount"
+          direction-links
+          @click="handlePage()"
+          style="min-width: 2em"
       />
     </div>
 
@@ -74,47 +74,55 @@
         <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
           <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset()" class="q-gutter-md">
             <q-input
-              v-if="buttonStatus==='修改物品'"
-              ref="iteminfo.idRef.value"
-              v-model="iteminfo.id.value"
-              label="编号"
-              hint="物品编号"
-              lazy-rules
-              :readonly="buttonStatus==='修改物品'"
-              :rules="contentRules"
+                v-if="buttonStatus==='修改物品'"
+                ref="iteminfo.idRef.value"
+                v-model="iteminfo.id.value"
+                label="编号"
+                hint="物品编号"
+                lazy-rules
+                :readonly="buttonStatus==='修改物品'"
+                :rules="contentRules"
             />
             <q-input
-              ref="iteminfo.titleRef.value"
-              v-model="iteminfo.title.value"
-              label="标题"
-              hint="输入正确物品标题"
-              lazy-rules
-              :rules="contentRules"
+                ref="iteminfo.titleRef.value"
+                v-model="iteminfo.title.value"
+                label="标题"
+                hint="输入正确物品标题"
+                lazy-rules
+                :rules="contentRules"
             />
             <q-input
-              ref="iteminfo.descriptionRef.value"
-              v-model="iteminfo.description.value"
-              label="描述"
-              hint="请输入描述"
-              lazy-rules
-              :rules="contentRules"
+                ref="iteminfo.descriptionRef.value"
+                v-model="iteminfo.description.value"
+                label="描述"
+                hint="请输入描述"
+                lazy-rules
+                :rules="contentRules"
             />
             <q-input
-              ref="iteminfo.priceRef.value"
-              v-model="iteminfo.price.value"
-              label="价格"
-              hint="请输入价格"
-              lazy-rules
-              :rules="priceRules"
+                ref="iteminfo.descriptionRef.value"
+                v-model="iteminfo.sort.value"
+                label="分类"
+                hint="请输入分类名称"
+                lazy-rules
+                :rules="contentRules"
             />
             <q-input
-              ref="iteminfo.useridRef.value"
-              v-model="iteminfo.userid.value"
-              label="用户id"
-              hint="请输入用户id"
-              lazy-rules
-              :rules="idRules"
-              :readonly="buttonStatus==='修改物品'"
+                ref="iteminfo.priceRef.value"
+                v-model="iteminfo.price.value"
+                label="价格"
+                hint="请输入价格"
+                lazy-rules
+                :rules="priceRules"
+            />
+            <q-input
+                ref="iteminfo.useridRef.value"
+                v-model="iteminfo.userid.value"
+                label="用户id"
+                hint="请输入用户id"
+                lazy-rules
+                :rules="idRules"
+                :readonly="buttonStatus==='修改物品'"
             />
             <q-toggle v-model="iteminfo.accept.value" label="同意许可协议"/>
 
@@ -254,6 +262,7 @@ function checkCounts() {
     iteminfo.description.value = selected.value[0].description//@ts-ignore
     iteminfo.userid.value = selected.value[0].userid//@ts-ignore
     iteminfo.price.value = selected.value[0].price//@ts-ignore
+    iteminfo.sort.value = selected.value[0].sort//@ts-ignore
     windowDisplay.value = true
   }
 }
@@ -262,18 +271,13 @@ function checkCounts() {
 function onSubmit() {
   if (iteminfo.accept.value == true) {
     if (buttonStatus === '新增物品') {
-      if ( iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
+      if (iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
         api.post("/item/", {
           "title": iteminfo.title.value,
           "description": iteminfo.description.value,
           "price": iteminfo.price.value,
           "userid": iteminfo.userid.value
         }).then(res => {
-          if (res.code === "200") {
-            CommSeccess("提交成功")
-          } else {
-            CommFail("提交失败")
-          }
           windowDisplay.value = false
           loadPage()
         })
@@ -288,13 +292,13 @@ function onSubmit() {
           "title": iteminfo.title.value,
           "description": iteminfo.description.value,
           "price": iteminfo.price.value,
-          "userid": iteminfo.userid.value
+          "userid": iteminfo.userid.value,
+          "sort": iteminfo.sort.value
         }).then(res => {
-          if (res.status === 200) {
-            CommSeccess("提交成功")
-          } else {
-            CommFail("提交失败")
+          if (res.code == '200') {
+            CommSeccess('操作成功')
           }
+
           windowDisplay.value = false
           loadPage()
         })
@@ -360,10 +364,8 @@ function deleteItems_ById(idlist: any) {
 // 根据id删除单个用户
 function deleteItemById(id: string) {
   api.delete("item/" + id).then(res => {
-    if (res.code == 200) {
+    if (res.code == "200") {
       CommSeccess('成功删除')
-    } else {
-      CommFail('删除失败')
     }
   })
 }
@@ -372,12 +374,12 @@ function deleteItemById(id: string) {
 //导出数据
 function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | undefined, row: any) {
   let formatted = formatFn !== void 0
-    ? formatFn(val, row)
-    : val
+      ? formatFn(val, row)
+      : val
 
   formatted = formatted === void 0 || formatted === null
-    ? ''
-    : String(formatted)
+      ? ''
+      : String(formatted)
 
   formatted = formatted.split('"').join('""')
   return `"${formatted}"`
@@ -386,20 +388,20 @@ function wrapCsvValue(val: any, formatFn: ((arg0: any, arg1: any) => any) | unde
 function exportTable() {
   //@ts-ignore
   const content = [columns.map(col => wrapCsvValue(col.label))].concat(
-    //@ts-ignore
-    rows.value.map(row => columns.map(col => wrapCsvValue(
-      typeof col.field === 'function'
-        ? col.field(row)
-        : row[col.field === void 0 ? col.name : col.field],
-      col.format,
-      row
-    )).join(','))
+      //@ts-ignore
+      rows.value.map(row => columns.map(col => wrapCsvValue(
+          typeof col.field === 'function'
+              ? col.field(row)
+              : row[col.field === void 0 ? col.name : col.field],
+          col.format,
+          row
+      )).join(','))
   ).join('\r\n')
 
   const status = exportFile(
-    'table-export.csv',
-    content,
-    'text/csv'
+      'table-export.csv',
+      content,
+      'text/csv'
   )
 
 

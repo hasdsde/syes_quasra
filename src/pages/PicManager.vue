@@ -12,17 +12,17 @@
     <!--  表格  -->
     <div class="q-pa-md" style="margin-left:auto">
       <q-table
-        title="图片管理"
-        :rows="rows"
-        :columns="columns"
-        row-key="name"
-        hide-pagination
-        :pagination="pagination"
-        :selected-rows-label="getSelectedString"
-        selection="multiple"
-        v-model:selected="selected"
-        :loading="loadingPage"
-        grid
+          title="图片管理"
+          :rows="rows"
+          :columns="columns"
+          row-key="name"
+          hide-pagination
+          :pagination="pagination"
+          :selected-rows-label="getSelectedString"
+          selection="multiple"
+          v-model:selected="selected"
+          :loading="loadingPage"
+          grid
       >
         <template v-slot:top-right>
           <q-input label="学号搜索" v-model="searchtext" :dense=true
@@ -35,8 +35,8 @@
         </template>
         <template v-slot:item="props">
           <div
-            class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
-            :style="props.selected ? 'transform: scale(0.95);' : ''"
+              class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+              :style="props.selected ? 'transform: scale(0.95);' : ''"
           >
             <q-card :class="props.selected ? 'bg-grey-2' : ''">
               <q-card-section>
@@ -48,10 +48,10 @@
               </q-card-section>
               <q-separator/>
               <q-expansion-item
-                v-model="openall"
-                icon="camera"
-                :label="'用户: '+props.row.userid"
-                :caption="' '+props.row.createtime"
+                  v-model="openall"
+                  icon="camera"
+                  :label="'用户: '+props.row.userid"
+                  :caption="' '+props.row.createtime"
               >
                 <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')"
                         :key="col.name">
@@ -81,27 +81,27 @@
     <div class=" q-pa-lg flex flex-center
                       ">
       <q-pagination
-        v-model="currentPage"
-        :max="Pagecount"
-        direction-links
-        @click="handlePage()"
-        style="min-width: 2em"
+          v-model="currentPage"
+          :max="Pagecount"
+          direction-links
+          @click="handlePage()"
+          style="min-width: 2em"
       />
     </div>
 
     <!--文件上传-->
     <q-dialog v-model="windowDisplay" position="top">
       <q-uploader
-        url="http://localhost:8000/file/upload"
-        label="图片上传"
-        multiple
-        color="teal"
-        style="max-width: 300px"
-        max-file-size="1048576"
-        max-files="10"
-        auto-upload
-        field-name="file"
-        :form-fields="[{name: 'userid', value: userid.value}]"
+          url="http://localhost:8000/file/upload"
+          label="图片上传"
+          multiple
+          color="teal"
+          style="max-width: 300px"
+          max-file-size="1048576"
+          max-files="10"
+          auto-upload
+          field-name="file"
+          :form-fields="[{name: 'userid', value: userid.value}]"
       />
     </q-dialog>
 
@@ -111,7 +111,7 @@
 <script lang="ts" setup>
 //刷新按钮
 import {ref} from "vue";
-import {CommFail, CommSeccess} from "components/common";
+import {CommSeccess} from "components/common";
 import {api} from "boot/axios";
 import {useQuasar} from "quasar";
 
@@ -261,10 +261,8 @@ function deleteItems_ById(idlist: any) {
 // 根据id删除单个用户
 function deleteItemById(id: string) {
   api.delete("file/" + id).then(res => {
-    if (res.code == 200) {
+    if (res.code == "200") {
       CommSeccess('成功删除')
-    } else {
-      CommFail('删除失败')
     }
   })
 }

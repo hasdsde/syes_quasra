@@ -89,6 +89,7 @@ export class Iteminfo {
     priceRef = ref()
     userid = ref()
     useridRef = ref()
+    sort = ref()
     accept = ref(false)
 
     SetItem(value: Iteminfo) {
@@ -103,6 +104,7 @@ export class Iteminfo {
         this.priceRef = value.priceRef
         this.userid = value.userid
         this.useridRef = value.useridRef
+        this.sort = value.sort
     }
 
     clearall() {
@@ -117,6 +119,7 @@ export class Iteminfo {
         this.userid.value = ''
         this.useridRef.value = ''
         this.accept.value = false
+        this.sort.value = ''
     }
 }
 
@@ -130,7 +133,9 @@ export class Commentinfo {
     content = ref('')
     contentRef = ref('')
     tocommentid = ref('')
+    fromcommentid = ref('')
     tocommentidRef = ref('')
+    fromcommentidRef = ref('')
 
     Setitem(value: Commentinfo) {
         Object.assign(value)
@@ -146,7 +151,9 @@ export class Commentinfo {
         this.content.value = ''
         this.contentRef.value = ''
         this.tocommentid.value = ''
+        this.fromcommentid.value = ''
         this.tocommentidRef.value = ''
+        this.fromcommentidRef.value = ''
     }
 }
 
