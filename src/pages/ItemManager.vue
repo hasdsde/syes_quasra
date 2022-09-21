@@ -215,7 +215,7 @@ function loadPage() {
     }
   }
 //获取分页数据
-  api.get("/item/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
+  api.get("/Ritem/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
     rows.value = res.data.data
     Pagecount.value = Math.ceil(res.data.total / PageItem)
   })
@@ -227,7 +227,7 @@ function loadPage() {
 
 //切换按钮状态
 function switchbutton(value: { row: { id: string; }; value: any; }) {
-  api.get("/item/status?id=" + value.row.id + "&status=" + !value.value).then(() => {
+  api.get("/Ritem/status?id=" + value.row.id + "&status=" + !value.value).then(() => {
     loadPage()
     CommSeccess("操作成功")
   })
@@ -272,7 +272,7 @@ function onSubmit() {
   if (iteminfo.accept.value == true) {
     if (buttonStatus === '新增物品') {
       if (iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
-        api.post("/item/", {
+        api.post("/Ritem/", {
           "title": iteminfo.title.value,
           "description": iteminfo.description.value,
           "price": iteminfo.price.value,
@@ -287,7 +287,7 @@ function onSubmit() {
     }
     if (buttonStatus === '修改物品') {
       if (iteminfo.id.value != '' && iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
-        api.put("/item/", {
+        api.put("/Ritem/", {
           "id": iteminfo.id.value,
           "title": iteminfo.title.value,
           "description": iteminfo.description.value,
@@ -363,7 +363,7 @@ function deleteItems_ById(idlist: any) {
 
 // 根据id删除单个用户
 function deleteItemById(id: string) {
-  api.delete("item/" + id).then(res => {
+  api.delete("/Ritem/" + id).then(res => {
     if (res.code == "200") {
       CommSeccess('成功删除')
     }

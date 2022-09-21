@@ -214,7 +214,7 @@ function loadPage() {
     }
   }
 //获取分页数据
-  api.get("/user/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
+  api.get("/Ruser/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
     rows.value = res.data.data
     Pagecount.value = Math.ceil(res.data.total / PageItem)
   })
@@ -282,7 +282,7 @@ function deleteUsers_ById(idlist: any) {
 
 // 根据id删除单个用户
 function deleteUserById(id: string) {
-  api.delete("user/" + id).then(res => {
+  api.delete("Ruser/" + id).then(res => {
     if (res.code == "200") {
       CommSeccess('成功删除')
     }
@@ -316,7 +316,7 @@ function onSubmit() {
     if (userinfo.name.value != '' && userinfo.id.value != '' && userinfo.password.value != '' && userinfo.nickname.value != '' && userinfo.password.value == userinfo.repassword.value && userinfo.phone.value != '') {
       if (buttonStatus === '新增用户') {
 
-        api.post("/user/", {
+        api.post("/Ruser/", {
           "realname": userinfo.name.value,
           "password": userinfo.password.value,
           "nickname": userinfo.nickname.value,
@@ -336,7 +336,7 @@ function onSubmit() {
       }
       if (buttonStatus === '修改用户') {
 
-        api.put("/user/", {
+        api.put("/Ruser/", {
           "realname": userinfo.name.value,
           "password": userinfo.password.value,
           "nickname": userinfo.nickname.value,
