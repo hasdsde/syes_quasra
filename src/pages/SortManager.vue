@@ -129,7 +129,7 @@ function onReset() {
 //新增提交
 function onSubmit() {
   if (buttonStatus.value === '新增') {
-    api.post("/sort/", {
+    api.post("/Rsort/", {
       "name": sort.name.value,
       "icon": sort.icon.value,
       "pid": sort.pid.value
@@ -144,7 +144,7 @@ function onSubmit() {
     })
   }
   if (buttonStatus.value === '修改') {
-    api.put("/sort/", {
+    api.put("/Rsort/", {
       "id": sort.id.value,
       "name": sort.name.value,
       "icon": sort.icon.value,
@@ -208,7 +208,7 @@ function loadPage() {
   }
 
 //获取分页数据
-  api.get("/sort/p").then(res => {
+  api.get("/Rsort/p").then(res => {
     Prows.value = res.data
   })
 
@@ -246,7 +246,7 @@ function loadPage2() {
       Ncolumns = localInfo
     }
   }
-  api.get("/sort/n?checkid=" + checkid.value).then(res => {
+  api.get("/Rsort/n?checkid=" + checkid.value).then(res => {
     Nrows.value = res.data
   })
 }
@@ -300,7 +300,7 @@ function deleteItems_ById(idlist: any) {
 
 // 根据id删除单个用户
 function deleteItemById(id: string) {
-  api.delete("sort/" + id).then(res => {
+  api.delete("/Rsort/" + id).then(res => {
     if (res.code == "200") {
       CommSeccess('成功删除')
     }
