@@ -190,7 +190,7 @@ function loadPage() {
     }
   }
 //获取分页数据
-  api.get("/comment/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
+  api.get("/Rcomment/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
     rows.value = res.data.data
     Pagecount.value = Math.ceil(res.data.total / PageItem)
   })
@@ -233,7 +233,7 @@ function checkCounts() {
 function onSubmit() {
   if (buttonStatus === '新增评论') {
     if (commentinfo.itemid.value != '' && commentinfo.userid.value != '' && commentinfo.content.value != '') {
-      api.post("/comment/", {
+      api.post("/Rcomment/", {
         "id": commentinfo.id.value,
         "userid": commentinfo.userid.value,
         "itemid": commentinfo.itemid.value,
@@ -252,7 +252,7 @@ function onSubmit() {
   }
   if (buttonStatus === '修改评论') {
     if (commentinfo.id.value != '' && commentinfo.itemid.value != '' && commentinfo.userid.value != '' && commentinfo.content.value != '') {
-      api.put("/comment/", {
+      api.put("/Rcomment/", {
         "id": commentinfo.id.value,
         "userid": commentinfo.userid.value,
         "itemid": commentinfo.itemid.value,
@@ -313,7 +313,7 @@ function deleteItems_ById(idlist: any) {
 
 // 根据id删除单个用户
 function deleteItemById(id: string) {
-  api.delete("comment/" + id).then(res => {
+  api.delete("/Rcomment/" + id).then(res => {
     if (res.code == "200") {
       CommSeccess('成功删除')
     }

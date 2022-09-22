@@ -79,7 +79,7 @@ const uploadUrl = ref()
 //获取上传的回调
 function ImgInfo(info: any) {
   uploadUrl.value = JSON.parse(info.xhr.response).data.url
-  api.get("/rollimg/url?url=" + uploadUrl.value).then(res => {
+  api.get("/Rrollimg/url?url=" + uploadUrl.value).then(res => {
     CommSeccess("上传成功")
     loadPage()
   })
@@ -142,7 +142,7 @@ function loadPage() {
     }
   }
 //获取分页数据
-  api.get("/rollimg/").then(res => {
+  api.get("/Rrollimg/").then(res => {
     rows.value = res.data
   })
 
@@ -193,7 +193,7 @@ function deleteItems_ById(idlist: any) {
 
 // 根据id删除单个用户
 function deleteItemById(id: string) {
-  api.delete("/rollimg/" + id).then(res => {
+  api.delete("/Rrollimg/" + id).then(res => {
     if (res.code == "200") {
       CommSeccess('成功删除')
     }

@@ -5,7 +5,7 @@
     <tree path="/src/components" title="工具类"/>
     <tree path="/src/css" title="CSS"/>
     <tree path="/src/layouts" title="首页 登录页"/>
-    <tree path="/src/pages" title="一般页面"/>
+    <tree path="/src/pages" title="管理页面"/>
     <tree path="/src/router" title="路由"/>
     <tree path="/src/store" title="VueX"/>
     <tree path="/quasar.config.js" title="Quasar配置" extension="js"/>

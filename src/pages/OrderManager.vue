@@ -192,7 +192,7 @@ function loadPage() {
     }
   }
 //获取分页数据
-  api.get("/order/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
+  api.get("/Rorder/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
     rows.value = res.data.data
     Pagecount.value = Math.ceil(res.data.total / PageItem)
   })
@@ -202,17 +202,21 @@ function loadPage() {
 
 }
 
-//切换按钮状态
+//切换可用情况
 function switchbutton(value: { row: { id: string; }; value: any; }) {
   // console.log(value)
-  api.get("/order/status?id=" + value.row.id + "&status=" + value.value).then(() => {
+  api.put("/Rorder/", {
+    "id": value.row.id,//@ts-ignore
+    "enable": value.row.enable == 1 ? 0 : 1
+  }).then(() => {
     loadPage()
     CommSeccess("操作成功")
   })
 }
 
+//切换订单状态
 function switchstatus(props: any) {
-  api.get("/order/status/order?id=" + props.row.id + "&status=" + props.row.status).then(() => {
+  api.get("/Rorder/status/order?id=" + props.row.id + "&status=" + props.row.status).then(() => {
     loadPage()
     CommSeccess("操作成功")
   })
@@ -237,7 +241,7 @@ function onReset() {
 //提交新增或修改
 function onSubmit() {
   if (order.userid.value != '' && order.itemid.value != '') {
-    api.post("/order/", {
+    api.post("/Rorder/", {
       "userid": order.userid.value,
       "itemid": order.itemid.value,
     }).then(res => {
@@ -304,7 +308,7 @@ function deleteItems_ById(idlist: any) {
 
 // 根据id删除单个用户
 function deleteItemById(id: string) {
-  api.delete("/order/" + id).then(res => {
+  api.delete("/Rorder/" + id).then(res => {
     if (res.code == "200") {
       CommSeccess('成功删除')
     }

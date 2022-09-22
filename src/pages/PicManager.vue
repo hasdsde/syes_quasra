@@ -181,7 +181,7 @@ function loadPage() {
     }
   }
 //获取分页数据
-  api.get("/file/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
+  api.get("/Rfile/page?" + "pagesize=" + PageItem + "&currentpage=" + currentPage.value + "&searchtext=" + searchtext.value).then(res => {
 
     rows.value = res.data.data
     Pagecount.value = Math.ceil(res.data.total / PageItem)
@@ -201,7 +201,7 @@ let userid = ref(20201313013)
 //切换按钮状态
 function switchbutton(value: { id: string; is_delete: any; }) {
 
-  api.get("/file/status?id=" + value.id + "&status=" + !value.is_delete).then(() => {
+  api.get("/Rfile/status?id=" + value.id + "&status=" + !value.is_delete).then(() => {
     loadPage()
     CommSeccess("操作成功")
   })
@@ -260,7 +260,7 @@ function deleteItems_ById(idlist: any) {
 
 // 根据id删除单个用户
 function deleteItemById(id: string) {
-  api.delete("file/" + id).then(res => {
+  api.delete("/Rfile/" + id).then(res => {
     if (res.code == "200") {
       CommSeccess('成功删除')
     }
