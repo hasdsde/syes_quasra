@@ -38,106 +38,105 @@
           </q-input>
         </template>
       </q-table>
+      <!--  分页  -->
+      <div class="q-pa-lg flex flex-center">
+        <q-pagination
+            v-model="currentPage"
+            :max="Pagecount"
+            direction-links
+            @click="handlePage()"
+            style="min-width: 2em"
+        />
+      </div>
+      <!--新增弹出框-->
+      <q-dialog v-model="windowDisplay" position="right">
+        <q-card class="column full-height" style="width: 400px">
+          <q-card-section class="row items-center q-pb-none ">
+            <div class="text-h6">{{ buttonStatus }}</div>
+            <q-space/>
+            <q-btn icon="close" flat round dense v-close-popup/>
+          </q-card-section>
+          <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
+            <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset" class="q-gutter-md">
+              <q-input
+                  ref="userinfo.idRef.value"
+                  v-model="userinfo.id.value"
+                  label="学号"
+                  hint="学生学号"
+                  lazy-rules
+                  :rules="idRules"
+                  :readonly="buttonStatus==='修改用户'"
+              />
+              <q-input
+                  ref="userinfo.infoidRef.value"
+                  v-model="userinfo.infoid.value"
+                  label="认证id"
+                  hint="一般留空"
+                  lazy-rules
+                  :readonly="buttonStatus==='修改用户'"
+              />
+              <q-input
+                  ref="userinfo.nameRef.value"
+                  v-model="userinfo.name.value"
+                  label="姓名"
+                  hint="输入真实姓名"
+                  lazy-rules
+                  :rules="nameRules"
+              />
+              <q-input
+                  ref="userinfo.passwordRef.value"
+                  v-model="userinfo.password.value"
+                  label="密码"
+                  hint="请输入密码"
+                  lazy-rules
+                  :rules="nameRules"
+                  :type="userinfo.isPwd.value ? 'password' : 'text'"
+              >
+                <template v-slot:append>
+                  <q-icon
+                      :name="userinfo.isPwd.value ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="userinfo.isPwd.value = !userinfo.isPwd.value"
+                  />
+                </template>
+              </q-input>
+              <q-input
+                  ref="userinfo.passwordRef.value"
+                  v-model="userinfo.repassword.value"
+                  label="确认密码"
+                  hint="请确认输入密码"
+                  lazy-rules
+                  :rules="passwordRules"
+                  type="password"
+              />
+              <q-input
+                  ref="userinfo.nickname.value"
+                  v-model="userinfo.nickname.value"
+                  label="昵称"
+                  hint="输入昵称，创建后可更改"
+                  lazy-rules
+                  :rules="nameRules"
+              />
+              <q-input
+                  ref="userinfo.phoneRef.value"
+                  v-model="userinfo.phone.value"
+                  label="手机号"
+                  hint="请输入正确格式手机号"
+                  lazy-rules
+              />
 
-      <!--    加载动画，加了报错    -->
-      <!--      <template v-slot:loading>-->
-      <!--        <q-inner-loading showing color="primary"/>-->
-      <!--      </template>-->
+              <q-toggle v-model="userinfo.accept.value" label="同意许可协议"/>
+
+              <div>
+                <q-btn v-if="buttonStatus==='新增用户'" label="提交" type="submit" color="primary"/>
+                <q-btn v-if="buttonStatus==='修改用户'" label="提交修改" type="submit" color="primary"/>
+                <q-btn v-if="buttonStatus==='新增用户'" label="重置" type="reset" color="primary" flat class="q-ml-sm"/>
+              </div>
+            </form>
+          </div>
+        </q-card>
+      </q-dialog>
     </div>
-
-    <!--    <div class="q-mt-md">-->
-    <!--      Selected: {{ JSON.stringify(selected) }}-->
-    <!--    </div>-->
-    <!--  分页  -->
-    <div class="q-pa-lg flex flex-center">
-      <q-pagination
-          v-model="currentPage"
-          :max="Pagecount"
-          direction-links
-          @click="handlePage()"
-          style="min-width: 2em"
-      />
-    </div>
-    <!--新增弹出框-->
-    <q-dialog v-model="windowDisplay" position="right">
-      <q-card class="column full-height" style="width: 400px">
-        <q-card-section class="row items-center q-pb-none ">
-          <div class="text-h6">{{ buttonStatus }}</div>
-          <q-space/>
-          <q-btn icon="close" flat round dense v-close-popup/>
-        </q-card-section>
-        <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
-          <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset" class="q-gutter-md">
-            <q-input
-                ref="userinfo.idRef.value"
-                v-model="userinfo.id.value"
-                label="学号"
-                hint="学生学号"
-                lazy-rules
-                :rules="idRules"
-                :readonly="buttonStatus==='修改用户'"
-            />
-            <q-input
-                ref="userinfo.nameRef.value"
-                v-model="userinfo.name.value"
-                label="姓名"
-                hint="输入真实姓名"
-                lazy-rules
-                :rules="nameRules"
-            />
-            <q-input
-                ref="userinfo.passwordRef.value"
-                v-model="userinfo.password.value"
-                label="密码"
-                hint="请输入密码"
-                lazy-rules
-                :rules="nameRules"
-                :type="userinfo.isPwd.value ? 'password' : 'text'"
-            >
-              <template v-slot:append>
-                <q-icon
-                    :name="userinfo.isPwd.value ? 'visibility_off' : 'visibility'"
-                    class="cursor-pointer"
-                    @click="userinfo.isPwd.value = !userinfo.isPwd.value"
-                />
-              </template>
-            </q-input>
-            <q-input
-                ref="userinfo.passwordRef.value"
-                v-model="userinfo.repassword.value"
-                label="确认密码"
-                hint="请确认输入密码"
-                lazy-rules
-                :rules="passwordRules"
-                type="password"
-            />
-            <q-input
-                ref="userinfo.nickname.value"
-                v-model="userinfo.nickname.value"
-                label="昵称"
-                hint="输入昵称，创建后可更改"
-                lazy-rules
-                :rules="nameRules"
-            />
-            <q-input
-                ref="userinfo.phoneRef.value"
-                v-model="userinfo.phone.value"
-                label="手机号"
-                hint="请输入正确格式手机号"
-                lazy-rules
-            />
-
-            <q-toggle v-model="userinfo.accept.value" label="同意许可协议"/>
-
-            <div>
-              <q-btn v-if="buttonStatus==='新增用户'" label="提交" type="submit" color="primary"/>
-              <q-btn v-if="buttonStatus==='修改用户'" label="提交修改" type="submit" color="primary"/>
-              <q-btn v-if="buttonStatus==='新增用户'" label="重置" type="reset" color="primary" flat class="q-ml-sm"/>
-            </div>
-          </form>
-        </div>
-      </q-card>
-    </q-dialog>
   </div>
 </template>
 
@@ -249,12 +248,6 @@ function showNotif() {
           selected.value.forEach((item: any, index) => {
             idlist.value.push(item.id)
           })
-          // console.log(JSON.stringify(idlist.value))
-          // api.post("/user/dlist?ids=" + JSON.stringify(idlist.value)).then(res => {
-          //   console.log(res)
-          //   loadPage()
-          // })
-
           // 删除用户
           deleteUsers_ById(idlist)
 
@@ -375,7 +368,8 @@ function checkCounts() {
     userinfo.id.value = selected.value[0].id//@ts-ignore
     userinfo.name.value = selected.value[0].realname//@ts-ignore
     userinfo.nickname.value = selected.value[0].nickname//@ts-ignore
-    userinfo.phone.value = selected.value[0].phone
+    userinfo.phone.value = selected.value[0].phone//@ts-ignore
+    userinfo.infoid.value = selected.value[0].infoid
     windowDisplay.value = true
   }
 }

@@ -164,6 +164,8 @@ export class Userinfo {
     ageRef = ref()
     id = ref()
     idRef = ref()
+    infoid = ref()
+    infoidRef = ref()
     nickname = ref()
     nicknameRef = ref()
     phone = ref()
