@@ -15,8 +15,8 @@ export let menu = ref([
         icon: 'home', label: '主页', id: 1, isopen: true, children: [
             {link: 'Dashboard', icon: 'donut_large', desc: '仪表盘', id: 4,},
             {link: 'SysInfo', icon: 'hub', desc: '系统监控', id: 15},
+            {link: 'SqlInfo', icon: 'vertical_split', desc: '数据监控', id: 17},
             {link: 'LogInfo', icon: 'view_timeline', desc: '日志监控', id: 16},
-            {link: 'SqlInfo', icon: 'vertical_split', desc: 'SQL监控', id: 17},
         ]
     },
     {

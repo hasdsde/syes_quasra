@@ -8,7 +8,7 @@ const routes: RouteRecordRaw[] = [
             {path: '', redirect: 'Dashboard'},  //组件
             {path: 'Dashboard', component: () => import('src/monitors/Dashboard.vue')},
             {path: 'SysInfo', component: () => import('src/monitors/SysInfo.vue')},
-            {path: 'SqlInfo', component: () => import('src/monitors/SqlInfo.vue')},
+            {path: 'SqlInfo', component: () => import('src/monitors/DataInfo.vue')},
             {path: 'LogInfo', component: () => import('src/monitors/LogInfo.vue')},
             {path: 'UserManager', component: () => import('pages/UserManager.vue')},
             {path: 'ItemManager', component: () => import('pages/ItemManager.vue')},
