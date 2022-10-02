@@ -25,4 +25,7 @@
     <tree path="/src/settings/HomeSetting.vue" title="首页" extension="vue"/>
     <tree path="/src/settings/UserSetting.vue" title="用户" extension="vue"/>
     <tree path="/src/monitors/Dashboard.vue" title="仪表盘" extension="vue"/>
+    <tree path="/src/monitors/DataInfo.vue" title="数据监控" extension="vue"/>
+    <tree path="/src/monitors/LogInfo.vue" title="日志监控" extension="vue"/>
+    <tree path="/src/monitors/SysInfo.vue" title="系统监控" extension="vue"/>
 </trees>
