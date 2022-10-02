@@ -14,11 +14,13 @@ export let menu = ref([
     {
         icon: 'home', label: '主页', id: 1, isopen: true, children: [
             {link: 'Dashboard', icon: 'donut_large', desc: '仪表盘', id: 4,},
-            {link: 'CheckInfo', icon: 'notifications_active', desc: '实时监控', id: 5},
+            {link: 'SysInfo', icon: 'hub', desc: '系统监控', id: 15},
+            {link: 'LogInfo', icon: 'view_timeline', desc: '日志监控', id: 16},
+            {link: 'SqlInfo', icon: 'vertical_split', desc: 'SQL监控', id: 17},
         ]
     },
     {
-        icon: 'perm_identity', label: '管理', isopen: false, id: 2, children: [
+        icon: 'perm_identity', label: '管理', isopen: true, id: 2, children: [
             {link: 'UserManager', icon: 'person', desc: '用户管理', id: 6},
             {link: 'ItemManager', icon: 'shopping_bag', desc: '物品管理', id: 7},
             {link: 'SortManager', icon: 'category', desc: '分类管理', id: 13},
@@ -28,7 +30,7 @@ export let menu = ref([
         ]
     },
     {
-        icon: 'settings', label: '设置', id: 3, isopen: false, children: [
+        icon: 'settings', label: '设置', id: 3, isopen: true, children: [
             {link: 'UserSetting', icon: 'admin_panel_settings', desc: '用户设置', id: 8},
             {link: 'HomeSetting', icon: 'phonelink_setup', desc: '首页设置', id: 14},
             {link: 'About', icon: 'info', desc: '关于', id: 9},

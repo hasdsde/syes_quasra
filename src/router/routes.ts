@@ -7,7 +7,9 @@ const routes: RouteRecordRaw[] = [
         children: [
             {path: '', redirect: 'Dashboard'},  //组件
             {path: 'Dashboard', component: () => import('src/monitors/Dashboard.vue')},
-            {path: 'CheckInfo', component: () => import('src/monitors/CheckInfo.vue')},
+            {path: 'SysInfo', component: () => import('src/monitors/SysInfo.vue')},
+            {path: 'SqlInfo', component: () => import('src/monitors/SqlInfo.vue')},
+            {path: 'LogInfo', component: () => import('src/monitors/LogInfo.vue')},
             {path: 'UserManager', component: () => import('pages/UserManager.vue')},
             {path: 'ItemManager', component: () => import('pages/ItemManager.vue')},
             {path: 'CommentManager', component: () => import('pages/CommentManager.vue')},
@@ -15,7 +17,7 @@ const routes: RouteRecordRaw[] = [
             {path: 'OrderManager', component: () => import('pages/OrderManager.vue')},
             {path: 'SortManager', component: () => import('pages/SortManager.vue')},
             {path: 'UserSetting', component: () => import('src/settings/UserSetting.vue')},
-            {path: 'HomeSetting', component: () => import('pages/HomeSetting.vue')},
+            {path: 'HomeSetting', component: () => import('src/settings/HomeSetting.vue')},
             {path: 'About', component: () => import('src/settings/About.vue')},
         ],
     },
@@ -28,7 +30,7 @@ const routes: RouteRecordRaw[] = [
     //404页面
     {
         path: '/:catchAll(.*)*',
-        component: () => import('pages/ErrorNotFound.vue'),
+        component: () => import('layouts/ErrorNotFound.vue'),
     },
 ];
 
