@@ -32,21 +32,20 @@
       <!--   解决问题的最好办法就是逃避他   -->
       <template v-for="num in menus.length">
         <q-expansion-item
-          v-model="menus[num-1].isopen"
-          :icon="menus[num-1].icon"
-          :label="menus[num-1].label"
-          @click="handleOpen()"
-          style="color: rgb(0,0,0)"
-          expand-separator
+            v-model="menus[num-1].isopen"
+            :icon="menus[num-1].icon"
+            :label="menus[num-1].label"
+            @click="handleOpen()"
+            expand-separator
         >
           <q-card v-for="child in menus[num-1].children">
             <div class="q-pa-md " style="max-width: 500px">
               <q-list bordered padding class="rounded-borders text-primary" style="padding: 4px 0">
                 <q-item
-                  clickable
-                  v-ripple
-                  :to="child.link"
-                  :class="link === child.link?'my-menu-link':'q-expansion-default'"
+                    clickable
+                    v-ripple
+                    :to="child.link"
+                    :class="link === child.link?'my-menu-link':'q-expansion-default'"
                 >
                   <q-item-section avatar>
                     <q-icon :name="child.icon"/>
@@ -59,14 +58,14 @@
         </q-expansion-item>
         <template v-if="miniState&&menus[num-1].isopen">
           <q-expansion-item
-            v-for="son in menus[num-1].children"
-            v-model="menus[num-1].isopen"
-            :icon="son.icon"
-            :to="son.link"
-            :label="son.desc"
-            @click="handleOpen()"
-            :class="link===son.link?'q-expansion-active':'q-expansion-default'"
-            style="padding: 4px 0"
+              v-for="son in menus[num-1].children"
+              v-model="menus[num-1].isopen"
+              :icon="son.icon"
+              :to="son.link"
+              :label="son.desc"
+              @click="handleOpen()"
+              :class="link===son.link?'q-expansion-active':'q-expansion-default'"
+              style="padding: 4px 0"
           >
           </q-expansion-item>
         </template>
