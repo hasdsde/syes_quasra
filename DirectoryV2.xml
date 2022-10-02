@@ -9,4 +9,7 @@
     <tree path="/src/router" title="路由"/>
     <tree path="/src/store" title="VueX"/>
     <tree path="/quasar.config.js" title="Quasar配置" extension="js"/>
+    <tree path="/src/monitor" title="监控页面"/>
+    <tree path="/src/monitors" title="监控页面"/>
+    <tree path="/src/settings" title="设置页面"/>
 </trees>

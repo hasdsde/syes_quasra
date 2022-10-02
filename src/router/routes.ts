@@ -6,17 +6,17 @@ const routes: RouteRecordRaw[] = [
         component: () => import('layouts/MainLayout.vue'),//侧边栏
         children: [
             {path: '', redirect: 'Dashboard'},  //组件
-            {path: 'Dashboard', component: () => import('pages/Dashboard.vue')},
-            {path: 'CheckInfo', component: () => import('pages/CheckInfo.vue')},
+            {path: 'Dashboard', component: () => import('src/monitors/Dashboard.vue')},
+            {path: 'CheckInfo', component: () => import('src/monitors/CheckInfo.vue')},
             {path: 'UserManager', component: () => import('pages/UserManager.vue')},
             {path: 'ItemManager', component: () => import('pages/ItemManager.vue')},
             {path: 'CommentManager', component: () => import('pages/CommentManager.vue')},
             {path: 'PicManager', component: () => import('pages/PicManager.vue')},
             {path: 'OrderManager', component: () => import('pages/OrderManager.vue')},
             {path: 'SortManager', component: () => import('pages/SortManager.vue')},
-            {path: 'UserSetting', component: () => import('pages/UserSetting.vue')},
+            {path: 'UserSetting', component: () => import('src/settings/UserSetting.vue')},
             {path: 'HomeSetting', component: () => import('pages/HomeSetting.vue')},
-            {path: 'About', component: () => import('pages/About.vue')},
+            {path: 'About', component: () => import('src/settings/About.vue')},
         ],
     },
     {
