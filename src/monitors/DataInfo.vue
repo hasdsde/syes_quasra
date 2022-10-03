@@ -143,7 +143,7 @@
 
     <div class="q-pa-sm" style="width: 39vw">
       <q-table
-          title="Treats"
+          title="URL监控"
           :rows="rows"
           :columns="columns"
           row-key="name"
@@ -151,7 +151,7 @@
     </div>
     <div class="q-pa-sm q-ml-md" style="width: 39vw">
       <q-table
-          title="Treats"
+          title="Session监控"
           :rows="rows"
           :columns="columns"
           row-key="name"
