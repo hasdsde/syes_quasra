@@ -8,12 +8,12 @@
     <q-header elevated>
       <q-toolbar>
         <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
+            flat
+            dense
+            round
+            icon="menu"
+            aria-label="Menu"
+            @click="toggleLeftDrawer"
         />
         <!--    中间标题    -->
         <q-toolbar-title style="font-size: 14px">
@@ -32,12 +32,12 @@
 
     <!--  侧栏  -->
     <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      :breakpoint="500"
+        v-model="leftDrawerOpen"
+        show-if-above
+        bordered
+        :breakpoint="500"
 
-      :mini="miniState"
+        :mini="miniState"
     >
       <q-list>
         <!--        <q-item-label header class="q-mini-drawer-only">-->
@@ -76,7 +76,8 @@ function toggleLeftDrawer() {
   miniState.value = !miniState.value
 }
 
-let miniState = ref(true)
+//默认侧栏开启
+let miniState = ref(false)
 
 const UserNow = ref(localStorage.getItem('username'))
 const Useravatar = ref(localStorage.getItem('avatar'))

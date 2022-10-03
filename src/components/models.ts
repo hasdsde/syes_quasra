@@ -1,4 +1,4 @@
-import {ref} from "vue";
+import {Ref, ref, UnwrapRef} from "vue";
 
 export interface Todo {
     id: number;
@@ -7,6 +7,21 @@ export interface Todo {
 
 export interface Meta {
     totalCount: number;
+}
+
+export class InfoKV {
+    //这是啥类型我不知道，但是能跑
+    list: Ref<UnwrapRef<any[]>> = ref([])
+    title = ref('')
+
+    setList(k: string, v: string) {
+        // @ts-ignore
+        this.list.value.push({k: k, v: v})
+    }
+
+    setTitle(t: string) {
+        this.title.value = t;
+    }
 }
 
 //菜单数据

@@ -1,5 +1,6 @@
 <template>
   <div class="q-pa-md q-gutter-sm row ">
+    <CommCard :info="info1"></CommCard>
     <q-card class="my-card q-ma-md">
       <q-card-section class="bg-secondary">
         <div class="text-h6 text-white">概览</div>
@@ -257,11 +258,21 @@
 </template>
 
 <script lang="ts" setup>
+import CommCard from '/src/components/CommCard.vue'
+import {InfoKV} from "components/models";
 import axios from "axios";
 
-axios.get('http://192.168.31.100:8001/actuator/health').then(res => {
+let info1 = new InfoKV()
+info1.list.value.push({k: 'Key1', v: 'Value1'}, {k: 'Key2', v: 'Value2'}, {k: 'Key3', v: 'Value3'})
+info1.title.value = '系统设置'
+setTimeout(() => {
+  info1.setList('k55', 'v55')
+  info1.setTitle("Mysql设置")
+}, 2000)
+axios.get('http://192.168.31.99:8000/actuator/health').then(res => {
   console.log(res)
 })
+
 </script>
 
 <style scoped>

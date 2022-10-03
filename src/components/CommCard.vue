@@ -1,0 +1,30 @@
+<template>
+  <q-card class="my-card q-ma-md">
+    <q-card-section class="bg-secondary">
+      <div class="text-h6 text-white">{{ props.info.title.value }}</div>
+    </q-card-section>
+
+    <q-separator/>
+
+    <q-card-actions class="q-pa-md " vertical>
+      <div class="q-pa-md" v-for="item in props.info.list.value">
+        <span class="float-left">{{ item.k }}</span>
+        <span class="float-right text-green">{{ item.v }}</span>
+      </div>
+    </q-card-actions>
+  </q-card>
+</template>
+
+<script lang="ts" setup>
+const props = defineProps(['info'])
+console.log(props.info)
+</script>
+
+<style scoped>
+.my-card {
+  width: 100%;
+  max-width: 350px;
+  max-height: 450px;
+}
+</style>
+
