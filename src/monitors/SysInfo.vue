@@ -263,15 +263,18 @@ import {InfoKV} from "components/models";
 import axios from "axios";
 
 let info1 = new InfoKV()
-info1.list.value.push({k: 'Key1', v: 'Value1'}, {k: 'Key2', v: 'Value2'}, {k: 'Key3', v: 'Value3'})
 info1.title.value = '系统设置'
-setTimeout(() => {
-  info1.setList('k55', 'v55')
-  info1.setTitle("Mysql设置")
-}, 2000)
 axios.get('http://192.168.31.99:8000/actuator/health').then(res => {
-  console.log(res)
+  info1.list.value.splice(0, info1.list.value.length)//清空旧数据
+  res.data.status === 'UP' ? info1.addList("系统状态", "正常") : info1.addList("系统状态", "异常")
+  res.data.components.db.status === 'UP' ? info1.addList("数据库状态", "正常") : info1.addList("数据库状态", "异常")
+  res.data.components.redis.status === 'UP' ? info1.addList("缓存数据库状态", "正常") : info1.addList("缓存数据库状态", "异常")
+  res.data.components.rabbit.status === 'UP' ? info1.addList("消息队列状态", "正常") : info1.addList("消息队列状态", "异常")
+  res.data.components.ping.status === 'UP' ? info1.addList("延迟状态", "正常") : info1.addList("延迟状态", "异常")
+  res.data.components.diskSpace.status === 'UP' ? info1.addList("硬盘状态", "正常") : info1.addList("硬盘状态", "异常")
+  console.log(res.data);
 })
+
 
 </script>
 

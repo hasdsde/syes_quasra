@@ -14,7 +14,7 @@ export class InfoKV {
     list: Ref<UnwrapRef<any[]>> = ref([])
     title = ref('')
 
-    setList(k: string, v: string) {
+    addList(k: string, v: string) {
         // @ts-ignore
         this.list.value.push({k: k, v: v})
     }
