@@ -7,35 +7,6 @@
     <CommCard :info="infoJVM" color="warning" title="JVM监控"></CommCard>
     <CommCard :info="infoProgress" color="blue-grey" title="进程监控"></CommCard>
     <CommCard :info="infoSys" color="info" title="系统监测"></CommCard>
-
-
-    <q-card class="my-card q-ma-md">
-      <q-card-section class="bg-info">
-        <div class="text-h6 text-white">系统监测</div>
-      </q-card-section>
-      <q-separator/>
-      <q-card-actions class="q-pa-md " vertical>
-        <div class="q-pa-md">
-          <span class="float-left">CPU占用</span>
-          <span class="float-right text-info">6%</span>
-          <q-linear-progress stripe color="info" size="10px" value="0.06"/>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">内存占用</span>
-          <span class="float-right text-info">6%</span>
-          <q-linear-progress stripe color="info" size="10px" value="0.06"/>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">硬盘占用</span>
-          <span class="float-right text-info">30%</span>
-          <q-linear-progress stripe color="info" size="10px" value="0.3"/>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">硬盘总量</span>
-          <span class="float-right text-info">500GB</span>
-        </div>
-      </q-card-actions>
-    </q-card>
     <q-card class="my-card q-ma-md">
       <q-card-section class="bg-orange">
         <div class="text-h6 text-white">自动更新/网页跳转</div>
@@ -44,7 +15,7 @@
       <q-card-actions class="q-pa-md " vertical>
         <div class="q-pa-md">
           <q-btn-toggle
-              v-model="secondModel"
+              v-model="Reload"
               spread
               class="my-custom-toggle"
               no-caps
@@ -53,10 +24,10 @@
               color="white"
               text-color="orange"
               :options="[
-          {label: '关', value: '-1'},
-          {label: '5s', value: '5'},
-          {label: '10s', value: '10'},
-          {label: '1min', value: '60'},
+          {label: '关', value: 99999999},
+          {label: '5s', value: 5},
+          {label: '20s', value: 20},
+          {label: '60s', value: 60},
         ]"
           />
         </div>
@@ -82,6 +53,7 @@ import CommCard from '/src/components/CommCard.vue'
 import {InfoKV} from "components/models";
 import axios from "axios";
 import {diffDate} from "components/common";
+import {ref} from "vue";
 
 let actuatorHealth: any = {}
 let actuatorEnv: any = {}
@@ -98,6 +70,16 @@ let JvmMemoryUsage = 0
 let JvmMemoryMax = 1
 let SysDiskUsage = 0
 let SysDiskMax = 1
+let timeCount = 1
+const Reload = ref(20)
+
+let timer = setInterval(() => {
+  timeCount++;
+  if (timeCount % (Reload.value) == 0) {
+    loadPage()
+  }
+}, 1000)
+
 
 loadPage()
 
@@ -168,8 +150,9 @@ function ScheduleData() {
 function JVMData() {
   infoJVM.list.value.splice(0, info1.list.value.length)//清空旧数据
 
-  axios.get('http://192.168.31.99:8000/actuator/metrics/http.server.requests').then(res => {
-    infoJVM.addList("Http请求数量", res.data.measurements[0].value)
+  axios.get('http://192.168.31.99:8000/actuator/metrics/process.start.time').then(res => {
+    infoJVM.addList("开启时间", new Date(res.data.measurements[0].value * 1000).toLocaleDateString().replace(/\//g, "-") + " " + new Date(res.data.measurements[0].value * 1000).toTimeString().substr(0, 8))
+    infoJVM.addList("运行时间", diffDate(res.data.measurements[0].value * 1000))
   })
   axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.threads.daemon').then(res => {
     infoJVM.addList("JVM后台线程", res.data.measurements[0].value)
@@ -180,15 +163,12 @@ function JVMData() {
   axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.threads.peak').then(res => {
     infoJVM.addList("JVM排队线程", res.data.measurements[0].value)
   })
-  axios.get('http://192.168.31.99:8000/actuator/metrics/process.start.time').then(res => {
-    infoJVM.addList("开启时间", new Date(res.data.measurements[0].value * 1000).toLocaleDateString().replace(/\//g, "-") + " " + new Date(res.data.measurements[0].value * 1000).toTimeString().substr(0, 8))
-    infoJVM.addList("运行时间", diffDate(res.data.measurements[0].value * 1000))
-  })
 
 }
 
 //进程监测
 function ProgressData() {
+  infoProgress.list.value.splice(0, info1.list.value.length)//清空旧数据
   axios.get('http://192.168.31.99:8000/actuator/metrics/process.cpu.usage').then(res => {
     infoProgress.addProgress("CPU占用", (res.data.measurements[0].value).toFixed(2), true)
     axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.memory.used').then(res => {
@@ -210,6 +190,7 @@ function ProgressData() {
 
 //系统监测
 function SysData() {
+  infoSys.list.value.splice(0, info1.list.value.length)//清空旧数据
   axios.get('http://192.168.31.99:8000/actuator/metrics/system.cpu.usage').then(res => {
     infoSys.addProgress("CPU占用", (res.data.measurements[0].value).toFixed(2), true)
     SysDiskUsage = parseInt((actuatorHealth.components.diskSpace.details.free / 1024 / 1024 / 1024).toFixed())
