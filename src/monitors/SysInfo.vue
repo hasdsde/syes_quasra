@@ -196,7 +196,7 @@ function SysData() {
     SysDiskUsage = parseInt((actuatorHealth.components.diskSpace.details.free / 1024 / 1024 / 1024).toFixed())
     SysDiskMax = parseInt((actuatorHealth.components.diskSpace.details.total / 1024 / 1024 / 1024).toFixed())
     infoSys.addProgress("硬盘占用", (1 - SysDiskUsage / SysDiskMax).toFixed(2), true)
-    infoSys.addList("已用空间", SysDiskUsage + "GB")
+    infoSys.addList("可用空间", SysDiskUsage + "GB")
     infoSys.addList("全部空间", SysDiskMax + "GB")
   })
 }

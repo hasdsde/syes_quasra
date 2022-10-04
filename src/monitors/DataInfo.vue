@@ -162,7 +162,11 @@
 </template>
 
 <script lang="ts" setup>
+import axios from "axios";
 
+axios.get('http://192.168.31.99:8000/druid/datasource.json').then(res => {
+  console.log(res.data)
+})
 
 const secondModel = 5
 const columns = [
