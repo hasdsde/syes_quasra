@@ -9,7 +9,9 @@
     <q-card-actions class="q-pa-md " vertical>
       <div class="q-pa-md" v-for="item in props.info.list.value">
         <span class="float-left">{{ item.k }}</span>
-        <span :class="'float-right '+ 'text-'+props.color">{{ item.v }}</span>
+        <span v-if="!item.b" :class="'float-right '+ 'text-'+props.color"> {{ item.v }}</span>
+        <span v-if="item.b" :class="'float-right '+ 'text-'+props.color">{{ item.v * 100 }}%</span>
+        <q-linear-progress v-if="item.b" stripe :color="props.color" size="10px" :value="item.v"/>
       </div>
     </q-card-actions>
   </q-card>

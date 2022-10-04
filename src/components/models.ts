@@ -14,9 +14,15 @@ export class InfoKV {
     //这是啥类型我不知道，但是能跑
     list: Ref<UnwrapRef<any[]>> = ref([])
 
-    addList(k: string, v: string) {
+    addList(k: string, v: string | number) {
         // @ts-ignore
         this.list.value.push({k: k, v: v})
+    }
+
+    //这是带进度条的
+    addProgress(k: string, v: string | number, b: boolean) {
+        // @ts-ignore
+        this.list.value.push({k: k, v: v, b: b})
     }
 }
 

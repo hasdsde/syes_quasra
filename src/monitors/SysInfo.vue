@@ -2,130 +2,13 @@
   <div class="q-pa-md q-gutter-sm row ">
     <CommCard :info="info1" color="primary" title="概览"></CommCard>
     <CommCard :info="infoSpringBoot" color="accent" title="SpringBoot信息"></CommCard>
-    <!--    <CommCard></CommCard>-->
+    <CommCard :info="infoSoftware" color="positive" title="软件信息"></CommCard>
+    <CommCard :info="infoSchedule" color="red" title="定时任务"></CommCard>
+    <CommCard :info="infoJVM" color="warning" title="JVM监控"></CommCard>
+    <CommCard :info="infoProgress" color="blue-grey" title="进程监控"></CommCard>
+    <CommCard :info="infoSys" color="info" title="系统监测"></CommCard>
 
-    <q-card class="my-card q-ma-md">
-      <q-card-section class="bg-positive">
-        <div class="text-h6 text-white">软件信息</div>
-      </q-card-section>
-      <q-separator/>
-      <q-card-actions class="q-pa-md " vertical>
-        <div class="q-pa-md">
-          <span class="float-left">Mysql主机</span>
-          <span class="float-right text-positive">hasdsd.cn:3306</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">Mysql版本</span>
-          <span class="float-right text-positive">8.0</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">Redis主机</span>
-          <span class="float-right text-positive">192.168.31.99:6379</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">Redis版本</span>
-          <span class="float-right text-positive">7.0.4</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">RabbitMQ主机</span>
-          <span class="float-right text-positive">192.168.31.99:5672</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">RabbitMQ版本</span>
-          <span class="float-right text-positive">3.10.7</span>
-        </div>
-      </q-card-actions>
-    </q-card>
-    <q-card class="my-card q-ma-md">
-      <q-card-section class="bg-negative">
-        <div class="text-h6 text-white">定时任务</div>
-      </q-card-section>
-      <q-separator/>
-      <q-card-actions class="q-pa-md " vertical>
-        <div class="q-pa-md">
-          <span class="float-left">任务1</span>
-          <span class="float-right text-negative">RedisSchedule.KeepItAlive</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">任务1</span>
-          <span class="float-right text-negative">0 */2 * * * ?</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">任务2</span>
-          <span class="float-right text-negative">RedisSchedule.AddRedisIntoMysql</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">任务2</span>
-          <span class="float-right text-negative">0 */20 * * * ?</span>
-        </div>
-        <!--        <div class="q-pa-md">-->
-        <!--          <span class="float-left">任务3</span>-->
-        <!--          <span class="float-right text-negative">192.168.31.99:5672</span>-->
-        <!--        </div>-->
-        <!--        <div class="q-pa-md">-->
-        <!--          <span class="float-left">任务3</span>-->
-        <!--          <span class="float-right text-negative">3.10.7</span>-->
-        <!--        </div>-->
-      </q-card-actions>
-    </q-card>
-    <q-card class="my-card q-ma-md">
-      <q-card-section class="bg-warning">
-        <div class="text-h6 text-white">SpringBoot监测</div>
-      </q-card-section>
-      <q-separator/>
-      <q-card-actions class="q-pa-md " vertical>
-        <div class="q-pa-md">
-          <span class="float-left">Http请求</span>
-          <span class="float-right text-warning">500</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">后台线程</span>
-          <span class="float-right text-warning">500</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">存活线程</span>
-          <span class="float-right text-warning">50</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">排队线程</span>
-          <span class="float-right text-warning">50</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">开启时间</span>
-          <span class="float-right text-warning">2022-10-5 10:10:10</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">运行时长</span>
-          <span class="float-right text-warning">20min</span>
-        </div>
-      </q-card-actions>
-    </q-card>
-    <q-card class="my-card q-ma-md">
-      <q-card-section class="bg-primary">
-        <div class="text-h6 text-white">进程监测</div>
-      </q-card-section>
-      <q-separator/>
-      <q-card-actions class="q-pa-md " vertical>
-        <div class="q-pa-md">
-          <span class="float-left">CPU占用</span>
-          <span class="float-right text-primary">6%</span>
-          <q-linear-progress stripe size="10px" value="0.06"/>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">内存占用</span>
-          <span class="float-right text-primary">6%</span>
-          <q-linear-progress stripe size="10px" value="0.06"/>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">CPU核心</span>
-          <span class="float-right text-primary">16</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">内存总量</span>
-          <span class="float-right text-primary">16GB</span>
-        </div>
-      </q-card-actions>
-    </q-card>
+
     <q-card class="my-card q-ma-md">
       <q-card-section class="bg-info">
         <div class="text-h6 text-white">系统监测</div>
@@ -198,29 +81,49 @@
 import CommCard from '/src/components/CommCard.vue'
 import {InfoKV} from "components/models";
 import axios from "axios";
+import {diffDate} from "components/common";
 
 let actuatorHealth: any = {}
 let actuatorEnv: any = {}
+let actuatorSchedule: any = {}
 let info1 = new InfoKV() //概览
 let infoSpringBoot = new InfoKV();//SpringBoot信息
 let infoSoftware = new InfoKV()//软件信息
-
+let infoSchedule = new InfoKV()//定时任务
+let infoJVM = new InfoKV()//JVM监测
+let infoProgress = new InfoKV()//进程检测
+let infoSys = new InfoKV()
+//一些其他单位
+let JvmMemoryUsage = 0
+let JvmMemoryMax = 1
+let SysDiskUsage = 0
+let SysDiskMax = 1
 
 loadPage()
 
 function loadPage() {
+  //这个运行最慢
   axios.get('http://192.168.31.99:8000/actuator/health').then(res => {
     actuatorHealth = res.data
     InfoData()
+    SoftwareData()
+    SysData()
   })
   axios.get('http://192.168.31.99:8000/actuator/env').then(res => {
     actuatorEnv = res.data
     SpringBootData()
   })
+  axios.get('http://192.168.31.99:8000/actuator/scheduledtasks').then(res => {
+    actuatorSchedule = res.data.cron
+    ScheduleData()
+  })
+  JVMData()
+  ProgressData()
 
 }
 
-function InfoData() {//概览
+//概览
+function InfoData() {
   info1.list.value.splice(0, info1.list.value.length)//清空旧数据
   actuatorHealth.status === 'UP' ? info1.addList("系统状态", "正常") : info1.addList("系统状态", "异常")
   actuatorHealth.components.db.status === 'UP' ? info1.addList("数据库状态", "正常") : info1.addList("数据库状态", "异常")
@@ -230,9 +133,8 @@ function InfoData() {//概览
   actuatorHealth.components.diskSpace.status === 'UP' ? info1.addList("硬盘状态", "正常") : info1.addList("硬盘状态", "异常")
 }
 
-
-function SpringBootData() {//SpringBoot信息
-  console.log(actuatorEnv.propertySources[0])
+//SpringBoot信息
+function SpringBootData() {
   infoSpringBoot.list.value.splice(0, info1.list.value.length)//清空旧数据
   infoSpringBoot.addList('后台端口', actuatorEnv.propertySources[4].properties['my.server.name'].value + ':' + actuatorEnv.propertySources[0].properties['local.server.port'].value)
   infoSpringBoot.addList('JDK版本', actuatorEnv.propertySources[2].properties['java.runtime.version'].value)
@@ -242,7 +144,81 @@ function SpringBootData() {//SpringBoot信息
   infoSpringBoot.addList('日志等级', actuatorEnv.propertySources[4].properties['logging.level.root'].value)
 }
 
+//软件信息
+function SoftwareData() {
+  infoSoftware.list.value.splice(0, info1.list.value.length)//清空旧数据
+  infoSoftware.addList("Mysql主机", actuatorEnv.propertySources[4].properties['spring.datasource.url'].value.slice(13, 32))
+  infoSoftware.addList("驱动", actuatorEnv.propertySources[4].properties['spring.datasource.driver-class-name'].value)
+  infoSoftware.addList("Redis主机", actuatorEnv.propertySources[4].properties['spring.redis.host'].value + ':' + actuatorEnv.propertySources[4].properties['spring.redis.port'].value)
+  infoSoftware.addList("Redis版本", actuatorHealth.components.redis.details.version)
+  infoSoftware.addList("RabbitMQ主机", actuatorEnv.propertySources[4].properties['spring.rabbitmq.host'].value + ':' + actuatorEnv.propertySources[4].properties['spring.rabbitmq.port'].value)
+  infoSoftware.addList("RabbitMQ版本", actuatorHealth.components.rabbit.details.version)
+}
 
+//定时任务
+function ScheduleData() {
+  infoSchedule.list.value.splice(0, info1.list.value.length)//清空旧数据
+  actuatorSchedule.forEach((item: any, index: any) => {
+    infoSchedule.addList("任务" + index + 1, item.runnable.target.slice(34, 80))
+    infoSchedule.addList("任务" + index + 1 + "周期", item.expression)
+  })
+}
+
+//JVM信息
+function JVMData() {
+  infoJVM.list.value.splice(0, info1.list.value.length)//清空旧数据
+
+  axios.get('http://192.168.31.99:8000/actuator/metrics/http.server.requests').then(res => {
+    infoJVM.addList("Http请求数量", res.data.measurements[0].value)
+  })
+  axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.threads.daemon').then(res => {
+    infoJVM.addList("JVM后台线程", res.data.measurements[0].value)
+  })
+  axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.threads.live').then(res => {
+    infoJVM.addList("JVM存活线程", res.data.measurements[0].value)
+  })
+  axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.threads.peak').then(res => {
+    infoJVM.addList("JVM排队线程", res.data.measurements[0].value)
+  })
+  axios.get('http://192.168.31.99:8000/actuator/metrics/process.start.time').then(res => {
+    infoJVM.addList("开启时间", new Date(res.data.measurements[0].value * 1000).toLocaleDateString().replace(/\//g, "-") + " " + new Date(res.data.measurements[0].value * 1000).toTimeString().substr(0, 8))
+    infoJVM.addList("运行时间", diffDate(res.data.measurements[0].value * 1000))
+  })
+
+}
+
+//进程监测
+function ProgressData() {
+  axios.get('http://192.168.31.99:8000/actuator/metrics/process.cpu.usage').then(res => {
+    infoProgress.addProgress("CPU占用", (res.data.measurements[0].value).toFixed(2), true)
+    axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.memory.used').then(res => {
+      JvmMemoryUsage = res.data.measurements[0].value / 1024 / 1024 / 8
+      JvmMemoryUsage.toFixed(2)
+      //没办法，阻塞函数
+      axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.memory.max').then(res => {
+        JvmMemoryMax = res.data.measurements[0].value / 1024 / 1024 / 8
+        JvmMemoryMax.toFixed(2)
+        infoProgress.addProgress("内存占用", (JvmMemoryUsage / JvmMemoryMax).toFixed(2), true)
+        axios.get('http://192.168.31.99:8000/actuator/metrics/system.cpu.count').then(res => {
+          infoProgress.addList("系统内核", res.data.measurements[0].value)
+          infoProgress.addList("内存总量", '16GB')
+        })
+      })
+    })
+  })
+}
+
+//系统监测
+function SysData() {
+  axios.get('http://192.168.31.99:8000/actuator/metrics/system.cpu.usage').then(res => {
+    infoSys.addProgress("CPU占用", (res.data.measurements[0].value).toFixed(2), true)
+    SysDiskUsage = parseInt((actuatorHealth.components.diskSpace.details.free / 1024 / 1024 / 1024).toFixed())
+    SysDiskMax = parseInt((actuatorHealth.components.diskSpace.details.total / 1024 / 1024 / 1024).toFixed())
+    infoSys.addProgress("硬盘占用", (1 - SysDiskUsage / SysDiskMax).toFixed(2), true)
+    infoSys.addList("已用空间", SysDiskUsage + "GB")
+    infoSys.addList("全部空间", SysDiskMax + "GB")
+  })
+}
 </script>
 
 <style scoped>
