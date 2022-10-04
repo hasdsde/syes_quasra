@@ -9,7 +9,7 @@
     <q-card-actions class="q-pa-md " vertical>
       <div class="q-pa-md" v-for="item in props.info.list.value">
         <span class="float-left">{{ item.k }}</span>
-        <span class="float-right text-green">{{ item.v }}</span>
+        <span :class="'float-right '+ 'text-'+props.color">{{ item.v }}</span>
       </div>
     </q-card-actions>
   </q-card>
@@ -17,7 +17,6 @@
 
 <script lang="ts" setup>
 const props = defineProps(['info', 'color', 'title'])
-console.log(props)
 </script>
 
 <style scoped>

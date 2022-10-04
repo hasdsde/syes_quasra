@@ -9,6 +9,7 @@ export interface Meta {
     totalCount: number;
 }
 
+//卡片组件的信息
 export class InfoKV {
     //这是啥类型我不知道，但是能跑
     list: Ref<UnwrapRef<any[]>> = ref([])

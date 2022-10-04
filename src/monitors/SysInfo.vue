@@ -1,72 +1,9 @@
 <template>
   <div class="q-pa-md q-gutter-sm row ">
-    <CommCard :info="info1" color="red" title="概览"></CommCard>
-    <q-card class="my-card q-ma-md">
-      <q-card-section class="bg-secondary">
-        <div class="text-h6 text-white">概览</div>
-      </q-card-section>
+    <CommCard :info="info1" color="primary" title="概览"></CommCard>
+    <CommCard :info="infoSpringBoot" color="accent" title="SpringBoot信息"></CommCard>
+    <!--    <CommCard></CommCard>-->
 
-      <q-separator/>
-
-      <q-card-actions class="q-pa-md " vertical>
-        <div class="q-pa-md">
-          <span class="float-left">系统状态</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">数据库状态</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">缓存数据库</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">硬盘</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">消息队列</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">延迟状态</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-      </q-card-actions>
-    </q-card>
-    <q-card class="my-card q-ma-md">
-      <q-card-section class="bg-accent">
-        <div class="text-h6 text-white">SpringBoot信息</div>
-      </q-card-section>
-      <q-separator/>
-      <q-card-actions class="q-pa-md " vertical>
-        <div class="q-pa-md">
-          <span class="float-left">后台端口</span>
-          <span class="float-right text-accent">8000</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">JDK版本</span>
-          <span class="float-right text-accent">1.8.0_342-b07</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">操作系统</span>
-          <span class="float-right text-accent">Windows10</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">编码</span>
-          <span class="float-right text-accent">UTF-8</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">日志等级</span>
-          <span class="float-right text-accent">INFO</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">日志文件</span>
-          <span class="float-right text-accent">正常</span>
-        </div>
-      </q-card-actions>
-    </q-card>
     <q-card class="my-card q-ma-md">
       <q-card-section class="bg-positive">
         <div class="text-h6 text-white">软件信息</div>
@@ -262,17 +199,48 @@ import CommCard from '/src/components/CommCard.vue'
 import {InfoKV} from "components/models";
 import axios from "axios";
 
-let info1 = new InfoKV()
-axios.get('http://192.168.31.99:8000/actuator/health').then(res => {
+let actuatorHealth: any = {}
+let actuatorEnv: any = {}
+let info1 = new InfoKV() //概览
+let infoSpringBoot = new InfoKV();//SpringBoot信息
+let infoSoftware = new InfoKV()//软件信息
+
+
+loadPage()
+
+function loadPage() {
+  axios.get('http://192.168.31.99:8000/actuator/health').then(res => {
+    actuatorHealth = res.data
+    InfoData()
+  })
+  axios.get('http://192.168.31.99:8000/actuator/env').then(res => {
+    actuatorEnv = res.data
+    SpringBootData()
+  })
+
+}
+
+function InfoData() {//概览
   info1.list.value.splice(0, info1.list.value.length)//清空旧数据
-  res.data.status === 'UP' ? info1.addList("系统状态", "正常") : info1.addList("系统状态", "异常")
-  res.data.components.db.status === 'UP' ? info1.addList("数据库状态", "正常") : info1.addList("数据库状态", "异常")
-  res.data.components.redis.status === 'UP' ? info1.addList("缓存数据库状态", "正常") : info1.addList("缓存数据库状态", "异常")
-  res.data.components.rabbit.status === 'UP' ? info1.addList("消息队列状态", "正常") : info1.addList("消息队列状态", "异常")
-  res.data.components.ping.status === 'UP' ? info1.addList("延迟状态", "正常") : info1.addList("延迟状态", "异常")
-  res.data.components.diskSpace.status === 'UP' ? info1.addList("硬盘状态", "正常") : info1.addList("硬盘状态", "异常")
-  console.log(res.data);
-})
+  actuatorHealth.status === 'UP' ? info1.addList("系统状态", "正常") : info1.addList("系统状态", "异常")
+  actuatorHealth.components.db.status === 'UP' ? info1.addList("数据库状态", "正常") : info1.addList("数据库状态", "异常")
+  actuatorHealth.components.redis.status === 'UP' ? info1.addList("缓存数据库状态", "正常") : info1.addList("缓存数据库状态", "异常")
+  actuatorHealth.components.rabbit.status === 'UP' ? info1.addList("消息队列状态", "正常") : info1.addList("消息队列状态", "异常")
+  actuatorHealth.components.ping.status === 'UP' ? info1.addList("延迟状态", "正常") : info1.addList("延迟状态", "异常")
+  actuatorHealth.components.diskSpace.status === 'UP' ? info1.addList("硬盘状态", "正常") : info1.addList("硬盘状态", "异常")
+}
+
+
+function SpringBootData() {//SpringBoot信息
+  console.log(actuatorEnv.propertySources[0])
+  infoSpringBoot.list.value.splice(0, info1.list.value.length)//清空旧数据
+  infoSpringBoot.addList('后台端口', actuatorEnv.propertySources[4].properties['my.server.name'].value + ':' + actuatorEnv.propertySources[0].properties['local.server.port'].value)
+  infoSpringBoot.addList('JDK版本', actuatorEnv.propertySources[2].properties['java.runtime.version'].value)
+  infoSpringBoot.addList('操作系统', actuatorEnv.propertySources[2].properties['os.name'].value)
+  infoSpringBoot.addList('文件编码', actuatorEnv.propertySources[2].properties['file.encoding'].value)
+  infoSpringBoot.addList('日志文件', actuatorEnv.propertySources[2].properties['LOG_FILE'].value)
+  infoSpringBoot.addList('日志等级', actuatorEnv.propertySources[4].properties['logging.level.root'].value)
+}
 
 
 </script>
