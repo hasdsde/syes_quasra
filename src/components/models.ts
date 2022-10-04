@@ -12,15 +12,10 @@ export interface Meta {
 export class InfoKV {
     //这是啥类型我不知道，但是能跑
     list: Ref<UnwrapRef<any[]>> = ref([])
-    title = ref('')
 
     addList(k: string, v: string) {
         // @ts-ignore
         this.list.value.push({k: k, v: v})
-    }
-
-    setTitle(t: string) {
-        this.title.value = t;
     }
 }
 

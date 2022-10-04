@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md q-gutter-sm row ">
-    <CommCard :info="info1"></CommCard>
+    <CommCard :info="info1" color="red" title="概览"></CommCard>
     <q-card class="my-card q-ma-md">
       <q-card-section class="bg-secondary">
         <div class="text-h6 text-white">概览</div>
@@ -263,7 +263,6 @@ import {InfoKV} from "components/models";
 import axios from "axios";
 
 let info1 = new InfoKV()
-info1.title.value = '系统设置'
 axios.get('http://192.168.31.99:8000/actuator/health').then(res => {
   info1.list.value.splice(0, info1.list.value.length)//清空旧数据
   res.data.status === 'UP' ? info1.addList("系统状态", "正常") : info1.addList("系统状态", "异常")

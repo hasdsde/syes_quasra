@@ -1,7 +1,7 @@
 <template>
   <q-card class="my-card q-ma-md">
-    <q-card-section class="bg-secondary">
-      <div class="text-h6 text-white">{{ props.info.title.value }}</div>
+    <q-card-section :class="'bg-'+props.color">
+      <div class="text-h6 text-white">{{ props.title }}</div>
     </q-card-section>
 
     <q-separator/>
@@ -16,8 +16,8 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps(['info'])
-console.log(props.info)
+const props = defineProps(['info', 'color', 'title'])
+console.log(props)
 </script>
 
 <style scoped>
