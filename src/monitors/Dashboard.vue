@@ -244,20 +244,16 @@ function ProgressData() {
   infoProgress.list.value.splice(0, info1.list.value.length)//清空旧数据
   axios.get('http://192.168.31.99:8000/actuator/metrics/process.cpu.usage').then(res => {
     infoProgress.addProgress("CPU占用", (res.data.measurements[0].value).toFixed(2), true)
-    axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.memory.used').then(res => {
-      JvmMemoryUsage = res.data.measurements[0].value / 1024 / 1024 / 8
-      JvmMemoryUsage.toFixed(2)
-      //没办法，阻塞函数
-      axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.memory.max').then(res => {
-        JvmMemoryMax = res.data.measurements[0].value / 1024 / 1024 / 8
-        JvmMemoryMax.toFixed(2)
-        infoProgress.addProgress("内存占用", (JvmMemoryUsage / JvmMemoryMax).toFixed(2), true)
-        axios.get('http://192.168.31.99:8000/actuator/metrics/system.cpu.usage').then(res => {
-          infoProgress.addProgress("系统CPU占用", (res.data.measurements[0].value).toFixed(2), true)
-          SysDiskUsage = parseInt((actuatorHealth.components.diskSpace.details.free / 1024 / 1024 / 1024).toFixed())
-          SysDiskMax = parseInt((actuatorHealth.components.diskSpace.details.total / 1024 / 1024 / 1024).toFixed())
-          infoProgress.addProgress("硬盘占用", (1 - SysDiskUsage / SysDiskMax).toFixed(2), true)
-        })
+    //没办法，阻塞函数
+    axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.memory.max').then(res => {
+      JvmMemoryMax = res.data.measurements[0].value / 1024 / 1024 / 8
+      JvmMemoryMax.toFixed(2)
+      infoProgress.addProgress("内存占用", (JvmMemoryUsage / JvmMemoryMax).toFixed(2), true)
+      axios.get('http://192.168.31.99:8000/actuator/metrics/system.cpu.usage').then(res => {
+        infoProgress.addProgress("系统CPU占用", (res.data.measurements[0].value).toFixed(2), true)
+        SysDiskUsage = parseInt((actuatorHealth.components.diskSpace.details.free / 1024 / 1024 / 1024).toFixed())
+        SysDiskMax = parseInt((actuatorHealth.components.diskSpace.details.total / 1024 / 1024 / 1024).toFixed())
+        infoProgress.addProgress("系统硬盘占用", (1 - SysDiskUsage / SysDiskMax).toFixed(2), true)
       })
     })
   })

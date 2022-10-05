@@ -16,7 +16,7 @@
                   font-size="10px"
                   class="q-ma-md"
                   :value="parseFloat(item.v*100)"
-                  size="80px"
+                  size="60px"
                   :thickness="0.1"
                   :color="props.color"
                   track-color="grey-3"
@@ -29,8 +29,8 @@
           </div>
         </div>
       </div>
-      <div class="col q-mt-md" v-for="(item,index) in props.info.list.value">
-        <div v-if="index>=2">
+      <div class="col " v-for="(item,index) in props.info.list.value">
+        <div v-if="index>=2" class="q-ma-md">
           <span class="float-left">{{ item.k }}</span>
           <span :class="'float-right   '+'text'+props.color">{{ item.v * 100 }}%</span>
           <q-linear-progress stripe :color="props.color" size="10px" :value="parseFloat(item.v)"/>
