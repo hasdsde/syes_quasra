@@ -24,6 +24,12 @@ export class InfoKV {
         // @ts-ignore
         this.list.value.push({k: k, v: v, b: b})
     }
+
+    setList(k: string, v: string | number) {
+        this.list.value.forEach(item => {
+            item.k == k ? item.v = v : ''
+        })
+    }
 }
 
 //菜单数据

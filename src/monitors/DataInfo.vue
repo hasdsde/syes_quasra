@@ -1,108 +1,10 @@
 <template>
   <div class="q-pa-md q-gutter-sm row ">
+    <CommCard :info="ListMysql" title="Mysql概览" color="secondary"></CommCard>
+    <CommCard :info="ListWeb" title="Web检测" color="purple"></CommCard>
+    <CommCard :info="ListImp" title="重要SQL检测" color="positive"></CommCard>
 
-    <q-card class="my-card q-ma-md">
-      <q-card-section class="bg-secondary">
-        <div class="text-h6 text-white">MySQL概览</div>
-      </q-card-section>
 
-      <q-separator/>
-
-      <q-card-actions class="q-pa-md " vertical>
-        <div class="q-pa-md">
-          <span class="float-left">获取连接时检测</span>
-          <span class="float-right text-green">开启</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">空闲时检测</span>
-          <span class="float-right text-green">开启</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">初始连接大小</span>
-          <span class="float-right text-green">2</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">最大连接数</span>
-          <span class="float-right text-green">10</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">最大等待时间</span>
-          <span class="float-right text-green">2000</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">IP白名单</span>
-          <span class="float-right text-green">192.168.31.100</span>
-        </div>
-      </q-card-actions>
-    </q-card>
-    <q-card class="my-card q-ma-md">
-      <q-card-section class="bg-purple">
-        <div class="text-h6 text-white">Web检测</div>
-      </q-card-section>
-
-      <q-separator/>
-
-      <q-card-actions class="q-pa-md " vertical>
-        <div class="q-pa-md">
-          <span class="float-left">正在执行</span>
-          <span class="float-right text-purple">1</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">最大并发</span>
-          <span class="float-right text-purple">2</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">请求次数</span>
-          <span class="float-right text-purple">200</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">更新行数</span>
-          <span class="float-right text-purple">10</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">读取行数</span>
-          <span class="float-right text-purple">20</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">JDBC执行数</span>
-          <span class="float-right text-purple">20</span>
-        </div>
-      </q-card-actions>
-    </q-card>
-    <q-card class="my-card q-ma-md">
-      <q-card-section class="bg-positive">
-        <div class="text-h6 text-white">重要SQL检测</div>
-      </q-card-section>
-
-      <q-separator/>
-
-      <q-card-actions class="q-pa-md " vertical>
-        <div class="q-pa-md">
-          <span class="float-left">登录请求</span>
-          <span class="float-right text-positive">100</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">浏览首页</span>
-          <span class="float-right text-positive">2</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">物品浏览总量</span>
-          <span class="float-right text-positive">200</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">新增物品数</span>
-          <span class="float-right text-positive">10</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">新增评论</span>
-          <span class="float-right text-positive">20</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">新增订单</span>
-          <span class="float-right text-positive">20</span>
-        </div>
-      </q-card-actions>
-    </q-card>
     <q-card class="my-card q-ma-md">
       <q-card-section class="bg-orange">
         <div class="text-h6 text-white">自动更新/网页跳转</div>
@@ -163,10 +65,72 @@
 
 <script lang="ts" setup>
 import axios from "axios";
+import {InfoKV} from "components/models";
+import CommCard from "components/CommCard.vue";
 
-axios.get('http://192.168.31.99:8000/druid/datasource.json').then(res => {
-  console.log(res.data)
-})
+const ListMysql = new InfoKV()
+const ListWeb = new InfoKV()
+const ListImp = new InfoKV()
+let DataDataSource = []
+let DataWeb = []
+let DataImp = []
+loadPage()
+
+function loadPage() {
+  CardList()
+  WebList()
+  ImpList()
+}
+
+//Mysql概览
+function CardList() {
+  axios.get('http://192.168.31.99:8000/druid/datasource.json').then(res => {
+    DataDataSource = res.data.Content[0]
+    ListMysql.addList("获取连接时检测", DataDataSource.TestOnBorrow === true ? '开启' : '关闭')
+    ListMysql.addList("空闲时检测", DataDataSource.TestWhileIdle === true ? '开启' : '关闭')
+    ListMysql.addList("保持连接", DataDataSource.KeepAlive === true ? '开启' : '关闭')
+    ListMysql.addList("初始化大小", DataDataSource.InitialSize)
+    ListMysql.addList("最大连接大小", DataDataSource.MaxActive)
+    ListMysql.addList("最长等待时间", DataDataSource.MaxWait)
+  })
+}
+
+//Web检测
+function WebList() {
+  axios.get('http://192.168.31.99:8000/druid/webapp.json').then(res => {
+    DataWeb = res.data.Content[0]
+    ListWeb.addList("正在执行", DataWeb.RunningCount)
+    ListWeb.addList("最大并发", DataWeb.ConcurrentMax)
+    ListWeb.addList("请求次数", DataWeb.RequestCount)
+    ListWeb.addList("更新行数", DataWeb.JdbcUpdateCount)
+    ListWeb.addList("读取行数", DataWeb.JdbcFetchRowCount)
+    ListWeb.addList("JDBC执行数", DataWeb.JdbcExecuteCount)
+  })
+}
+
+//重要SQL检测
+function ImpList() {
+  axios.get('http://192.168.31.99:8000/druid/weburi.json').then(res => {
+        DataImp = res.data.Content
+        console.log(DataImp)
+        //这样是为了保证顺序
+        ListImp.addList("登录请求", '')
+        ListImp.addList("首页浏览", '')
+        ListImp.addList("物品浏览", '')
+        ListImp.addList("新增/修改物品", '')
+        ListImp.addList("新增/修改评论", '')
+        ListImp.addList("新增/修改订单", '')
+        DataImp.forEach((data: any) => {
+          data.URI == '/user/login' ? ListImp.setList("登录请求", data.RequestCount) : ''
+          data.URI == '/rollimg/' ? ListImp.setList("首页浏览", data.RequestCount) : ''
+          data.URI == '/item/id' ? ListImp.setList("物品浏览", data.RequestCount) : ''
+          data.URI == '/file/id' ? ListImp.setList("新增/修改物品", data.RequestCount) : ''
+          data.URI == '/comment/p' ? ListImp.setList("新增/修改评论", data.RequestCount) : ''
+          data.URI == '/order/u' ? ListImp.setList("新增/修改订单", data.RequestCount) : ''
+        })
+      }
+  )
+}
 
 const secondModel = 5
 const columns = [
