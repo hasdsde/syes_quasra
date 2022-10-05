@@ -11,7 +11,7 @@
         <span class="float-left">{{ item.k }}</span>
         <span v-if="!item.b" :class="'float-right '+ 'text-'+props.color"> {{ item.v }}</span>
         <span v-if="item.b" :class="'float-right '+ 'text-'+props.color">{{ item.v * 100 }}%</span>
-        <q-linear-progress v-if="item.b" stripe :color="props.color" size="10px" :value="parseInt(item.v)"/>
+        <q-linear-progress v-if="item.b" stripe :color="props.color" size="10px" :value="parseFloat(item.v)"/>
       </div>
     </q-card-actions>
   </q-card>
