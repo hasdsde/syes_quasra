@@ -133,12 +133,12 @@ function ImpList() {
   axios.get('http://192.168.31.99:8000/druid/weburi.json').then(res => {
         DataImp = res.data.Content
         //这样是为了保证顺序
-        ListImp.addList("登录请求", '')
-        ListImp.addList("首页浏览", '')
-        ListImp.addList("物品浏览", '')
-        ListImp.addList("新增/修改物品", '')
-        ListImp.addList("新增/修改评论", '')
-        ListImp.addList("新增/修改订单", '')
+        ListImp.addList("登录请求", 0)
+        ListImp.addList("首页浏览", 0)
+        ListImp.addList("物品浏览", 0)
+        ListImp.addList("新增/修改物品", 0)
+        ListImp.addList("新增/修改评论", 0)
+        ListImp.addList("新增/修改订单", 0)
         DataImp.forEach((data: any) => {
           data.URI == '/user/login' ? ListImp.setList("登录请求", data.RequestCount) : ''
           data.URI == '/rollimg/' ? ListImp.setList("首页浏览", data.RequestCount) : ''
@@ -157,6 +157,7 @@ function URLList() {
     UrlColumns.value.splice(0, UrlColumns.value.length)
     res.data.forEach((data: any) => {
       data.sortable = true
+      data.align = 'center'
       //@ts-ignore
       UrlColumns.value.push(data)
     })
@@ -178,6 +179,7 @@ function SessionList() {
     SessionColumns.value.splice(0, SessionColumns.value.length)
     res.data.forEach((data: any) => {
       data.sortable = true
+      data.align = 'center'
       //@ts-ignore
       SessionColumns.value.push(data)
     })

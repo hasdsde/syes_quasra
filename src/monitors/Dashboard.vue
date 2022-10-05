@@ -9,7 +9,7 @@
       <q-card-actions class="q-pa-md " vertical>
         <div class="q-pa-md">
           <q-btn-toggle
-              v-model="secondModel"
+              v-model="Reload"
               spread
               class="my-custom-toggle"
               no-caps
@@ -18,10 +18,10 @@
               color="white"
               text-color="orange"
               :options="[
-          {label: '关', value: '-1'},
-          {label: '5s', value: '5'},
-          {label: '10s', value: '10'},
-          {label: '1min', value: '60'},
+          {label: '关', value: 9999999},
+          {label: '5s', value: 10},
+          {label: '20s', value: 20},
+          {label: '1min', value: 60},
         ]"
           />
         </div>
@@ -39,96 +39,8 @@
         </div>
       </q-card-actions>
     </q-card>
-    <q-card class="my-card q-ma-md">
-      <q-card-section class="bg-secondary">
-        <div class="text-h6 text-white">概览</div>
-      </q-card-section>
-
-      <q-separator/>
-
-      <q-card-actions class="q-pa-md " vertical>
-        <div class="q-pa-md">
-          <span class="float-left">系统状态</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">数据库状态</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">缓存数据库</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">硬盘</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">消息队列</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-        <div class="q-pa-md">
-          <span class="float-left">延迟状态</span>
-          <span class="float-right text-green">正常</span>
-        </div>
-      </q-card-actions>
-    </q-card>
-    <q-card class="my-card2 q-ma-md">
-      <q-card-section class="bg-primary">
-        <div class="text-h6 text-white">实时监控</div>
-      </q-card-section>
-
-      <q-separator/>
-
-      <q-card-actions class="q-pa-md  column" vertical>
-        <div class="col">
-          <div class="row">
-            <div class="col">
-              <q-circular-progress
-                  show-value
-                  font-size="10px"
-                  class="q-ma-md"
-                  value="81"
-                  size="80px"
-                  :thickness="0.25"
-                  color="primary"
-                  track-color="grey-3"
-              >
-                <q-avatar size="60px">
-                  <q-icon name="memory" color="primary"></q-icon>
-                </q-avatar>
-              </q-circular-progress>
-              <span>处理器</span>
-            </div>
-            <div class="col">
-
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <q-circular-progress
-              show-value
-              font-size="10px"
-              class="q-ma-md"
-              value="81"
-              size="80px"
-              :thickness="0.25"
-              color="primary"
-              track-color="grey-3"
-          >
-            <q-avatar size="60px">
-              <q-icon name="select_all" color="primary"></q-icon>
-            </q-avatar>
-          </q-circular-progress>
-          <span>内存</span>
-        </div>
-        <div class="col q-mt-md">
-          <span class="float-left">硬盘占用</span>
-          <span class="float-right text-primary">30%</span>
-          <q-linear-progress stripe color="primary" size="10px" value="0.3"/>
-        </div>
-      </q-card-actions>
-    </q-card>
+    <CommCard :info="info1" color="secondary" title="概览"></CommCard>
+    <WideCard :info="infoProgress" color="primary" title="实时监控"></WideCard>
     <div class="q-pa-sm" style="width: 39vw">
       <q-table
           title="前台监控"
@@ -149,7 +61,22 @@
 </template>
 
 <script lang="ts" setup>
+import CommCard from '/src/components/CommCard.vue'
+import {ref} from "vue";
+import {InfoKV} from "components/models";
+import axios from "axios";
+import WideCard from "/src/components/WideCard.vue";
+
+let SysDiskUsage = 0
+let SysDiskMax = 1
+let actuatorHealth: any = {}
+let info1 = new InfoKV() //概览
+const Reload = ref(20)
+let timeCount = 1
 const secondModel = 5
+let JvmMemoryUsage = 0
+let JvmMemoryMax = 1
+let infoProgress = new InfoKV()//进程检测
 const columns = [
   {
     name: 'name',
@@ -282,6 +209,60 @@ const rows = [
     iron: '6%'
   }
 ]
+//定时器
+let timer = setInterval(() => {
+  timeCount++;
+  if (timeCount % (Reload.value) == 0) {
+    // loadPage()
+    console.log('触发')
+  }
+}, 1000)
+loadPage()
+
+function loadPage() {
+  //系统概览
+  axios.get('http://192.168.31.99:8000/actuator/health').then(res => {
+    actuatorHealth = res.data
+    InfoData()
+    ProgressData()
+  })
+}
+
+//概览
+function InfoData() {
+  info1.list.value.splice(0, info1.list.value.length)//清空旧数据
+  actuatorHealth.status === 'UP' ? info1.addList("系统状态", "正常") : info1.addList("系统状态", "异常")
+  actuatorHealth.components.db.status === 'UP' ? info1.addList("数据库状态", "正常") : info1.addList("数据库状态", "异常")
+  actuatorHealth.components.redis.status === 'UP' ? info1.addList("缓存数据库状态", "正常") : info1.addList("缓存数据库状态", "异常")
+  actuatorHealth.components.rabbit.status === 'UP' ? info1.addList("消息队列状态", "正常") : info1.addList("消息队列状态", "异常")
+  actuatorHealth.components.ping.status === 'UP' ? info1.addList("延迟状态", "正常") : info1.addList("延迟状态", "异常")
+  actuatorHealth.components.diskSpace.status === 'UP' ? info1.addList("硬盘状态", "正常") : info1.addList("硬盘状态", "异常")
+}
+
+//进程监测
+function ProgressData() {
+  infoProgress.list.value.splice(0, info1.list.value.length)//清空旧数据
+  axios.get('http://192.168.31.99:8000/actuator/metrics/process.cpu.usage').then(res => {
+    infoProgress.addProgress("CPU占用", (res.data.measurements[0].value).toFixed(2), true)
+    axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.memory.used').then(res => {
+      JvmMemoryUsage = res.data.measurements[0].value / 1024 / 1024 / 8
+      JvmMemoryUsage.toFixed(2)
+      //没办法，阻塞函数
+      axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.memory.max').then(res => {
+        JvmMemoryMax = res.data.measurements[0].value / 1024 / 1024 / 8
+        JvmMemoryMax.toFixed(2)
+        infoProgress.addProgress("内存占用", (JvmMemoryUsage / JvmMemoryMax).toFixed(2), true)
+        axios.get('http://192.168.31.99:8000/actuator/metrics/system.cpu.usage').then(res => {
+          infoProgress.addProgress("系统CPU占用", (res.data.measurements[0].value).toFixed(2), true)
+          SysDiskUsage = parseInt((actuatorHealth.components.diskSpace.details.free / 1024 / 1024 / 1024).toFixed())
+          SysDiskMax = parseInt((actuatorHealth.components.diskSpace.details.total / 1024 / 1024 / 1024).toFixed())
+          infoProgress.addProgress("硬盘占用", (1 - SysDiskUsage / SysDiskMax).toFixed(2), true)
+        })
+      })
+    })
+  })
+  console.log(infoProgress.list)
+}
 
 </script>
 <style scoped>
@@ -291,9 +272,5 @@ const rows = [
   max-height: 450px;
 }
 
-.my-card2 {
-  width: 100%;
-  max-width: 38vw;
-  max-height: 450px;
-}
+
 </style>
