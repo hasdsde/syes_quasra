@@ -42,21 +42,12 @@
     <CommCard :info="info1" color="secondary" title="概览"></CommCard>
     <WideCard :info="infoProgress" color="primary" title="实时监控"></WideCard>
     <div class="q-pa-sm" style="width: 39vw">
-      <q-table
-          title="前台监控"
-          :rows="rows"
-          :columns="columns"
-          row-key="name"
-      />
+      <VueApexCharts type="line" height="350" :options="chartOptions" :series="series"></VueApexCharts>
     </div>
-    <div class="q-pa-sm q-ml-md" style="width: 39vw">
-      <q-table
-          title="后台监控"
-          :rows="rows"
-          :columns="columns"
-          row-key="name"
-      />
+    <div class="q-pa-sm" style="width: 39vw">
+      <VueApexCharts type="line" height="350" :options="chartOptions" :series="series"></VueApexCharts>
     </div>
+
   </div>
 </template>
 
@@ -66,17 +57,17 @@ import {ref} from "vue";
 import {InfoKV} from "components/models";
 import axios from "axios";
 import WideCard from "/src/components/WideCard.vue";
+import VueApexCharts from "vue3-apexcharts";
 
-let SysDiskUsage = 0
-let SysDiskMax = 1
+const Reload = ref(20)
 let actuatorHealth: any = {}
 let info1 = new InfoKV() //概览
-const Reload = ref(20)
+let infoProgress = new InfoKV()//进程检测
 let timeCount = 1
-const secondModel = 5
+let SysDiskUsage = 0
+let SysDiskMax = 1
 let JvmMemoryUsage = 0
 let JvmMemoryMax = 1
-let infoProgress = new InfoKV()//进程检测
 const columns = [
   {
     name: 'name',
@@ -258,6 +249,74 @@ function ProgressData() {
     })
   })
   console.log(infoProgress.list)
+}
+
+const series = [
+  {
+    name: "High - 2013",
+    data: [28, 29, 33, 36, 32, 32, 33]
+  },
+  {
+    name: "Low - 2013",
+    data: [12, 11, 14, 18, 17, 13, 13]
+  }]
+const chartOptions = {
+  chart: {
+    height: 350,
+    type: 'line',
+    dropShadow: {
+      enabled: true,
+      color: '#000',
+      top: 18,
+      left: 7,
+      blur: 10,
+      opacity: 0.2
+    },
+    toolbar: {
+      show: false
+    }
+  },
+  colors: ['#77B6EA', '#545454'],
+  dataLabels: {
+    enabled: false,
+  },
+  stroke: {
+    curve: 'straight'
+  },
+  title: {
+    text: '前台监控',
+    align: 'left'
+  },
+  grid: {
+    borderColor: '#e7e7e7',
+    row: {
+      colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+      opacity: 0.5
+    },
+  },
+  markers: {
+    size: 5
+  },
+  xaxis: {
+    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    title: {
+      text: 'Month'
+    }
+  },
+  yaxis: {
+    title: {
+      text: 'Temperature'
+    },
+    min: 5,
+    max: 40
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'right',
+    floating: true,
+    offsetY: -25,
+    offsetX: -5
+  },
 }
 
 </script>
