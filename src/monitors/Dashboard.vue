@@ -41,11 +41,11 @@
     </q-card>
     <CommCard :info="info1" color="secondary" title="概览"></CommCard>
     <WideCard :info="infoProgress" color="primary" title="实时监控"></WideCard>
-    <div class="q-pa-sm" style="width: 39vw">
-      <VueApexCharts type="line" height="350" :options="chartOptions" :series="series"></VueApexCharts>
+    <div class="q-ma-md shadow-3 q-pa-md" style="width: 38vw">
+      <VueApexCharts type="line" height="330" :options="chartOptions" :series="series"></VueApexCharts>
     </div>
-    <div class="q-pa-sm" style="width: 39vw">
-      <VueApexCharts type="line" height="350" :options="chartOptions" :series="series"></VueApexCharts>
+    <div class="q-ma-md shadow-3 q-pa-md" style="width: 38.5vw">
+      <VueApexCharts type="line" height="330" :options="chartOptions" :series="series"></VueApexCharts>
     </div>
 
   </div>
