@@ -63,6 +63,7 @@ import Aside from '../components/Aside.vue';
 import {useStore} from "src/store";
 import {menu} from "components/models";
 import {useRouter} from "vue-router/dist/vue-router";
+import {api} from "boot/axios";
 
 const $router = useRouter()
 const $store = useStore()
@@ -82,7 +83,7 @@ let miniState = ref(false)
 const UserNow = ref(localStorage.getItem('username'))
 const Useravatar = ref(localStorage.getItem('avatar'))
 
-
+CheckLogin()
 //面包屑
 let menus = ref(menu)
 let positions = ref()
@@ -109,5 +110,11 @@ function logout() {
   localStorage.removeItem('token')
   localStorage.removeItem('username')
   localStorage.removeItem('avatar')
+}
+
+function CheckLogin() {
+  api.get('/rootuser/online').then(res => {
+    console.log(res.data)
+  })
 }
 </script>

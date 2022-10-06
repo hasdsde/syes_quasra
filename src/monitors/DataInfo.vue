@@ -161,7 +161,6 @@ function URLList() {
       //@ts-ignore
       UrlColumns.value.push(data)
     })
-    console.log(UrlColumns)
   })
   axios.get('http://192.168.31.99:8000/druid/weburi.json').then(res => {
     UrlRows.value.splice(0, UrlRows.value.length)
@@ -169,7 +168,6 @@ function URLList() {
       //@ts-ignore
       UrlRows.value.push(data)
     })
-    console.log(UrlRows)
   })
 }
 

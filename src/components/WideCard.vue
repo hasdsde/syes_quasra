@@ -42,7 +42,6 @@
 
 <script lang="ts" setup>
 const props = defineProps(['info', 'color', 'title'])
-console.log(props.info)
 </script>
 
 <style scoped>

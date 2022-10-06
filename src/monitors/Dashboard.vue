@@ -205,7 +205,7 @@ let timer = setInterval(() => {
   timeCount++;
   if (timeCount % (Reload.value) == 0) {
     // loadPage()
-    console.log('触发')
+    loadPage()
   }
 }, 1000)
 loadPage()
@@ -248,7 +248,6 @@ function ProgressData() {
       })
     })
   })
-  console.log(infoProgress.list)
 }
 
 const series = [
