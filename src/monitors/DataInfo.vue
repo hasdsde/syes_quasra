@@ -49,6 +49,7 @@
           :rows="UrlRows"
           :columns="UrlColumns"
           row-key="name"
+          color="primary"
       />
     </div>
     <div class="q-pa-sm q-ml-md" style="width: 39vw">
@@ -57,6 +58,7 @@
           :rows="SessionRows"
           :columns="SessionColumns"
           row-key="name"
+          color="primary"
       />
     </div>
 
