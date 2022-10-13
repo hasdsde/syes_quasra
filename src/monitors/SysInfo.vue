@@ -85,17 +85,17 @@ loadPage()
 
 function loadPage() {
   //这个运行最慢
-  axios.get('http://192.168.31.99:8000/actuator/health').then(res => {
+  axios.get('http://192.168.199.99:8000/actuator/health').then(res => {
     actuatorHealth = res.data
     InfoData()
     SoftwareData()
     SysData()
   })
-  axios.get('http://192.168.31.99:8000/actuator/env').then(res => {
+  axios.get('http://192.168.199.99:8000/actuator/env').then(res => {
     actuatorEnv = res.data
     SpringBootData()
   })
-  axios.get('http://192.168.31.99:8000/actuator/scheduledtasks').then(res => {
+  axios.get('http://192.168.199.99:8000/actuator/scheduledtasks').then(res => {
     actuatorSchedule = res.data.cron
     ScheduleData()
   })
@@ -150,17 +150,17 @@ function ScheduleData() {
 function JVMData() {
   infoJVM.list.value.splice(0, info1.list.value.length)//清空旧数据
 
-  axios.get('http://192.168.31.99:8000/actuator/metrics/process.start.time').then(res => {
+  axios.get('http://192.168.199.99:8000/actuator/metrics/process.start.time').then(res => {
     infoJVM.addList("开启时间", new Date(res.data.measurements[0].value * 1000).toLocaleDateString().replace(/\//g, "-") + " " + new Date(res.data.measurements[0].value * 1000).toTimeString().substr(0, 8))
     infoJVM.addList("运行时间", diffDate(res.data.measurements[0].value * 1000))
   })
-  axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.threads.daemon').then(res => {
+  axios.get('http://192.168.199.99:8000/actuator/metrics/jvm.threads.daemon').then(res => {
     infoJVM.addList("JVM后台线程", res.data.measurements[0].value)
   })
-  axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.threads.live').then(res => {
+  axios.get('http://192.168.199.99:8000/actuator/metrics/jvm.threads.live').then(res => {
     infoJVM.addList("JVM存活线程", res.data.measurements[0].value)
   })
-  axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.threads.peak').then(res => {
+  axios.get('http://192.168.199.99:8000/actuator/metrics/jvm.threads.peak').then(res => {
     infoJVM.addList("JVM排队线程", res.data.measurements[0].value)
   })
 
@@ -169,17 +169,17 @@ function JVMData() {
 //进程监测
 function ProgressData() {
   infoProgress.list.value.splice(0, info1.list.value.length)//清空旧数据
-  axios.get('http://192.168.31.99:8000/actuator/metrics/process.cpu.usage').then(res => {
+  axios.get('http://192.168.199.99:8000/actuator/metrics/process.cpu.usage').then(res => {
     infoProgress.addProgress("CPU占用", (res.data.measurements[0].value).toFixed(2), true)
-    axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.memory.used').then(res => {
+    axios.get('http://192.168.199.99:8000/actuator/metrics/jvm.memory.used').then(res => {
       JvmMemoryUsage = res.data.measurements[0].value / 1024 / 1024 / 8
       JvmMemoryUsage.toFixed(2)
       //没办法，阻塞函数
-      axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.memory.max').then(res => {
+      axios.get('http://192.168.199.99:8000/actuator/metrics/jvm.memory.max').then(res => {
         JvmMemoryMax = res.data.measurements[0].value / 1024 / 1024 / 8
         JvmMemoryMax.toFixed(2)
         infoProgress.addProgress("内存占用", (JvmMemoryUsage / JvmMemoryMax).toFixed(2), true)
-        axios.get('http://192.168.31.99:8000/actuator/metrics/system.cpu.count').then(res => {
+        axios.get('http://192.168.199.99:8000/actuator/metrics/system.cpu.count').then(res => {
           infoProgress.addList("系统内核", res.data.measurements[0].value)
           infoProgress.addList("内存总量", '16GB')
         })
@@ -191,7 +191,7 @@ function ProgressData() {
 //系统监测
 function SysData() {
   infoSys.list.value.splice(0, info1.list.value.length)//清空旧数据
-  axios.get('http://192.168.31.99:8000/actuator/metrics/system.cpu.usage').then(res => {
+  axios.get('http://192.168.199.99:8000/actuator/metrics/system.cpu.usage').then(res => {
     infoSys.addProgress("CPU占用", (res.data.measurements[0].value).toFixed(2), true)
     SysDiskUsage = parseInt((actuatorHealth.components.diskSpace.details.free / 1024 / 1024 / 1024).toFixed())
     SysDiskMax = parseInt((actuatorHealth.components.diskSpace.details.total / 1024 / 1024 / 1024).toFixed())

@@ -212,7 +212,7 @@ loadPage()
 
 function loadPage() {
   //系统概览
-  axios.get('http://192.168.31.99:8000/actuator/health').then(res => {
+  axios.get('http://192.168.199.99:8000/actuator/health').then(res => {
     actuatorHealth = res.data
     InfoData()
     ProgressData()
@@ -233,14 +233,14 @@ function InfoData() {
 //进程监测
 function ProgressData() {
   infoProgress.list.value.splice(0, info1.list.value.length)//清空旧数据
-  axios.get('http://192.168.31.99:8000/actuator/metrics/process.cpu.usage').then(res => {
+  axios.get('http://192.168.199.99:8000/actuator/metrics/process.cpu.usage').then(res => {
     infoProgress.addProgress("CPU占用", (res.data.measurements[0].value).toFixed(2), true)
     //没办法，阻塞函数
-    axios.get('http://192.168.31.99:8000/actuator/metrics/jvm.memory.max').then(res => {
+    axios.get('http://192.168.199.99:8000/actuator/metrics/jvm.memory.max').then(res => {
       JvmMemoryMax = res.data.measurements[0].value / 1024 / 1024 / 8
       JvmMemoryMax.toFixed(2)
       infoProgress.addProgress("内存占用", (JvmMemoryUsage / JvmMemoryMax).toFixed(2), true)
-      axios.get('http://192.168.31.99:8000/actuator/metrics/system.cpu.usage').then(res => {
+      axios.get('http://192.168.199.99:8000/actuator/metrics/system.cpu.usage').then(res => {
         infoProgress.addProgress("系统CPU占用", (res.data.measurements[0].value).toFixed(2), true)
         SysDiskUsage = parseInt((actuatorHealth.components.diskSpace.details.free / 1024 / 1024 / 1024).toFixed())
         SysDiskMax = parseInt((actuatorHealth.components.diskSpace.details.total / 1024 / 1024 / 1024).toFixed())

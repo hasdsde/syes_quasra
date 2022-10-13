@@ -104,7 +104,8 @@ function loadPage() {
 //Mysql概览
 function CardList() {
   ListMysql.list.value.splice(0, ListMysql.list.value.length)
-  axios.get('http://192.168.31.99:8000/druid/datasource.json').then(res => {
+  axios.get('http://192.168.199.99:8000/druid/datasource.json').then(res => {
+    console.log(res)
     DataDataSource = res.data.Content[0]
     ListMysql.addList("获取连接时检测", DataDataSource.TestOnBorrow === true ? '开启' : '关闭')
     ListMysql.addList("空闲时检测", DataDataSource.TestWhileIdle === true ? '开启' : '关闭')
@@ -118,7 +119,7 @@ function CardList() {
 //Web检测
 function WebList() {
   ListWeb.list.value.splice(0, ListWeb.list.value.length)
-  axios.get('http://192.168.31.99:8000/druid/webapp.json').then(res => {
+  axios.get('http://192.168.199.99:8000/druid/webapp.json').then(res => {
     DataWeb = res.data.Content[0]
     ListWeb.addList("正在执行", DataWeb.RunningCount)
     ListWeb.addList("最大并发", DataWeb.ConcurrentMax)
@@ -132,7 +133,7 @@ function WebList() {
 //重要SQL检测
 function ImpList() {
   ListImp.list.value.splice(0, ListImp.list.value.length)
-  axios.get('http://192.168.31.99:8000/druid/weburi.json').then(res => {
+  axios.get('http://192.168.199.99:8000/druid/weburi.json').then(res => {
         DataImp = res.data.Content
         //这样是为了保证顺序
         ListImp.addList("登录请求", 0)
@@ -164,7 +165,7 @@ function URLList() {
       UrlColumns.value.push(data)
     })
   })
-  axios.get('http://192.168.31.99:8000/druid/weburi.json').then(res => {
+  axios.get('http://192.168.199.99:8000/druid/weburi.json').then(res => {
     UrlRows.value.splice(0, UrlRows.value.length)
     res.data.Content.forEach((data: any) => {
       //@ts-ignore
@@ -184,7 +185,7 @@ function SessionList() {
       SessionColumns.value.push(data)
     })
   })
-  axios.get('http://192.168.31.99:8000/druid/websession.json').then(res => {
+  axios.get('http://192.168.199.99:8000/druid/websession.json').then(res => {
     SessionRows.value.splice(0, SessionRows.value.length)
     res.data.Content.forEach((data: any) => {
       //@ts-ignore
