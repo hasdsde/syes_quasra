@@ -104,6 +104,33 @@ export class Sort {
     }
 }
 
+export class RollInfo {
+    id = ref()
+    name = ref()
+    ranks = ref()
+    sort = ref()
+    level = ref()
+    enable = ref()
+    p = ref()
+    idRef = ref()
+    nameRef = ref()
+    ranksRef = ref()
+    sortRef = ref()
+    levelRef = ref()
+    enableRef = ref()
+    pRef = ref()
+
+    clearall() {
+        this.id.value = ''
+        this.ranks.value = ''
+        this.sort.value = ''
+        this.level.value = ''
+        this.name.value = ''
+        this.enable.value = ''
+        this.p.value = ''
+    }
+}
+
 export class Iteminfo {
     id = ref()
     idRef = ref()

@@ -1,12 +1,101 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
-    <q-banner class="bg-primary text-white">
-      这是RollManager页面
-      <template v-slot:action>
-        <q-btn flat color="white" label="Dismiss"/>
-        <q-btn flat color="white" label="Update Credit Card"/>
-      </template>
-    </q-banner>
+    <div class="header">
+      <q-btn class="shadow-1" unelevated color="primary" label="刷新" :loading="loading[0]"
+             @click="simulateProgress(0)" icon="replay"/>
+      <q-btn class="shadow-1" unelevated color="secondary" label="新增"
+             @click="windowDisplay=true;buttonStatus='新增物品';onReset()"
+             icon="add_circle_outline"/>
+      <q-btn class="shadow-1" unelevated color="purple" label="修改" @click="checkCounts();buttonStatus='修改物品'"
+             icon="edit"/>
+      <q-btn class="shadow-1" unelevated color="red" label="删除" @click="showNotif" icon="delete_forever"/>
+      <q-btn class="shadow-1" unelevated color="brown-5" label="导出" @click="exportTable" icon="file_download"/>
+    </div>
+    <!--  表格  -->
+    <div class="q-pa-md" style="margin-left:auto">
+      <q-table
+          title="抽卡信息管理"
+          :rows="rows"
+          :columns="columns"
+          row-key="id"
+          selection="multiple"
+          :pagination.sync="myPagination"
+          v-model:selected="selected"
+          :loading="loadingPage"
+      >
+        <!--    加载动画    -->
+        <q-inner-loading showing color="primary" label="加载..."/>
+        <!--    自定义表格属性    -->
+        <template v-slot:body-cell-enable="props">
+          <q-td>
+            <div @click="switchbutton(props)" style="text-align: center">
+              <q-btn v-if="props.value" color="primary" label="可用" size="sm"/>
+              <q-btn v-if="!props.value" color="red" label="不可用" size="sm"/>
+            </div>
+          </q-td>
+        </template>
+      </q-table>
+    </div>
+    <!--  新增，修改  -->
+    <!--新增弹出框-->
+    <q-dialog v-model="windowDisplay" position="right">
+      <q-card class="column full-height" style="width: 400px">
+        <q-card-section class="row items-center q-pb-none ">
+          <div class="text-h6">{{ buttonStatus }}</div>
+          <q-space/>
+          <q-btn icon="close" flat round dense v-close-popup/>
+        </q-card-section>
+        <div class="q-pa-md" style="max-width: 300px;margin-left: 30px">
+          <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset()" class="q-gutter-md">
+            <q-input
+                v-if="buttonStatus==='修改物品'"
+                ref="iteminfo.idRef.value"
+                v-model="iteminfo.id.value"
+                label="编号"
+                hint="物品编号"
+                :readonly="buttonStatus==='修改物品'"
+            />
+            <q-input
+                ref="iteminfo.nameRef.value"
+                v-model="iteminfo.name.value"
+                label="名称"
+                hint=" 输入正确物品标题"
+            />
+            <q-input
+                ref="iteminfo.ranks.value"
+                v-model="iteminfo.ranks.value"
+                label="等级"
+                hint="请输入数字1-5"
+            />
+            <q-input
+                ref="iteminfo.sortRef.value"
+                v-model="iteminfo.sort.value"
+                label="分类"
+                hint="请输入分类名称"
+            />
+            <q-input
+                ref="iteminfo.levelRef.value"
+                v-model="iteminfo.level.value"
+                label="等级"
+                hint="请输入楼层"
+            />
+            <q-input
+                ref="iteminfo.pRef.value"
+                v-model="iteminfo.p.value"
+                label="父级"
+                hint="请输入字符串"
+                :readonly="buttonStatus==='修改物品'"
+            />
+
+            <div>
+              <q-btn v-if="buttonStatus==='新增物品'" label="提交" type="submit" color="primary"/>
+              <q-btn v-if="buttonStatus==='修改物品'" label="提交修改" type="submit" color="primary"/>
+              <q-btn v-if="buttonStatus==='新增物品'" label="重置" type="reset" color="primary" flat class="q-ml-sm"/>
+            </div>
+          </form>
+        </div>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -15,10 +104,10 @@
 import {ref} from "vue";
 import {api} from "boot/axios";
 import {CommFail, CommSeccess, CommWarn} from "components/common";
-import {Iteminfo} from "components/models";
+import {RollInfo} from "components/models";
 import {exportFile, useQuasar} from "quasar";
 
-
+const myPagination = {rowsPerPage: 20}
 //刷新按钮
 let loading = ref([false,])
 
@@ -57,6 +146,8 @@ function loadPage() {
       columns.value.forEach((item) => {
         //@ts-ignore
         item.align = "center"
+        //@ts-ignore
+        item.sortable = true
       })
       localStorage.setItem("rollcolumns", JSON.stringify(columns))
     })
@@ -74,7 +165,7 @@ function loadPage() {
   }
 //获取全部数据
   api.get("/roll/enable").then(res => {
-    rows.value = res.data.data
+    rows.value = res.data
     console.log(res.data)
   })
   setTimeout(() => {
@@ -92,22 +183,16 @@ function switchbutton(value: { row: { id: string; }; value: any; }) {
 }
 
 //新增物品
-const iteminfo = new Iteminfo();
+const iteminfo = new RollInfo();
 let windowDisplay = ref(false)
 let buttonStatus: string = '新增物品'
-//规则
-let priceRules = ref([
-  (val: number) => (val > 0 && val < 9999) || '价格过高或过低'
-])
-let contentRules = ref([(val: string | any[]) => (val && val.length > 0) || '输入值为空'])
-let idRules = ref([
-  (val: number) => (val > 20191111111 && val < 20229999999) || '请输入正确的学号'
-])
+
 
 //清空
 function onReset() {
   iteminfo.clearall()
 }
+
 
 //修改物品
 function checkCounts() {
@@ -116,57 +201,57 @@ function checkCounts() {
     CommWarn("请选择一个数据进行修改")
   } else {//@ts-ignore
     iteminfo.id.value = selected.value[0].id//@ts-ignore
-    iteminfo.title.value = selected.value[0].title//@ts-ignore
-    iteminfo.description.value = selected.value[0].description//@ts-ignore
-    iteminfo.userid.value = selected.value[0].userid//@ts-ignore
-    iteminfo.price.value = selected.value[0].price//@ts-ignore
+    iteminfo.ranks.value = selected.value[0].ranks//@ts-ignore
     iteminfo.sort.value = selected.value[0].sort//@ts-ignore
+    iteminfo.level.value = selected.value[0].level//@ts-ignore
+    iteminfo.enable.value = selected.value[0].enable//@ts-ignore
+    iteminfo.name.value = selected.value[0].name//@ts-ignore
+    iteminfo.p.value = selected.value[0].p//@ts-ignore
     windowDisplay.value = true
   }
 }
 
 //提交新增或修改
 function onSubmit() {
-  if (iteminfo.accept.value == true) {
-    if (buttonStatus === '新增物品') {
-      if (iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
-        api.post("/Ritem/", {
-          "title": iteminfo.title.value,
-          "description": iteminfo.description.value,
-          "price": iteminfo.price.value,
-          "userid": iteminfo.userid.value
-        }).then(res => {
-          windowDisplay.value = false
-          loadPage()
-        })
-      } else {
-        CommFail("请检查输入格式是否正确")
-      }
+  if (buttonStatus === '新增物品') {
+    console.log(iteminfo.id.value)
+    if (iteminfo.name.value != '') {
+      api.post("/roll/", {
+        "name": iteminfo.name.value,
+        "ranks": iteminfo.ranks.value,
+        "sort": iteminfo.sort.value,
+        "level": iteminfo.level.value,
+        "p": iteminfo.p.value
+      }).then(res => {
+        windowDisplay.value = false
+        loadPage()
+      })
+    } else {
+      CommFail("请检查输入格式是否正确")
     }
-    if (buttonStatus === '修改物品') {
-      if (iteminfo.id.value != '' && iteminfo.title.value != '' && iteminfo.description.value != '' && iteminfo.price.value > 0 && iteminfo.userid.value != '') {
-        api.put("/Ritem/", {
-          "id": iteminfo.id.value,
-          "title": iteminfo.title.value,
-          "description": iteminfo.description.value,
-          "price": iteminfo.price.value,
-          "userid": iteminfo.userid.value,
-          "sort": iteminfo.sort.value
-        }).then(res => {
-          if (res.code == '200') {
-            CommSeccess('操作成功')
-          }
-
-          windowDisplay.value = false
-          loadPage()
-        })
-      } else {
-        CommFail("请检查输入格式是否正确")
-      }
-    }
-  } else {
-    CommFail('请同意协议')
   }
+  if (buttonStatus === '修改物品') {
+    if (iteminfo.name.value != '') {
+      api.put("/roll/", {
+        "name": iteminfo.name.value,
+        "id": iteminfo.id.value,
+        "ranks": iteminfo.ranks.value,
+        "sort": iteminfo.sort.value,
+        "level": iteminfo.level.value,
+        "p": iteminfo.p.value,
+      }).then(res => {
+        if (res.code == '200') {
+          CommSeccess('操作成功')
+        }
+
+        windowDisplay.value = false
+        loadPage()
+      })
+    } else {
+      CommFail("请检查输入格式是否正确")
+    }
+  }
+
 }
 
 
