@@ -164,7 +164,7 @@ function loadPage() {
     }
   }
 //获取全部数据
-  api.get("/roll/enable").then(res => {
+  api.get("/roll/").then(res => {
     rows.value = res.data
     console.log(res.data)
   })
