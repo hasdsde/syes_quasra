@@ -50,12 +50,13 @@ export let menu = ref([
             {link: 'CommentManager', icon: 'chat', desc: '评论管理', id: 10},
             {link: 'PicManager', icon: 'image', desc: '图片管理', id: 11},
             {link: 'OrderManager', icon: 'list_alt', desc: '订单管理', id: 12},
+            {link: 'RollManager', icon: 'motion_photos_on', desc: '抽卡管理', id: 18},
         ]
     },
     {
         icon: 'settings', label: '设置', id: 3, isopen: true, children: [
-            {link: 'UserSetting', icon: 'admin_panel_settings', desc: '用户设置', id: 8},
             {link: 'HomeSetting', icon: 'phonelink_setup', desc: '首页设置', id: 14},
+
             {link: 'About', icon: 'info', desc: '关于', id: 9},
         ]
     }

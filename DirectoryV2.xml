@@ -30,4 +30,5 @@
     <tree path="/src/monitors/SysInfo.vue" title="系统监控" extension="vue"/>
     <tree path="/src/components/CommCard.vue" title="一般监控组件" extension="vue"/>
     <tree path="/src/components/WideCard.vue" title="宽体监控组件" extension="vue"/>
+    <tree path="/src/pages/RollManager.vue" title="抽卡" extension="vue"/>
 </trees>
